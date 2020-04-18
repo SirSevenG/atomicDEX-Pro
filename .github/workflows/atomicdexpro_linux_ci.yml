@@ -55,6 +55,7 @@ jobs:
           QT_ROOT: ~/Qt/5.14.1
         run: |
           cd ci_tools_atomic_dex
+          export PATH=$HOME/.nimble/bin:$PATH
           ls -la
           yes | nimble build
           ./ci_tools_atomic_dex build debug
