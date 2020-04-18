@@ -1,0 +1,68 @@
+name: AtomicDEX Pro Linux CI
+
+on: [pull_request, push]
+
+jobs:
+
+  linux-build:
+    name: Linux Build
+    runs-on: ubuntu-bionic
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install QT (Linux)
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: '5.14.1'
+          host: 'linux'
+          target: 'desktop'
+
+      - name: Install deps (Linux)
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo apt-get update  # prevents repo404 errors on apt-remove below
+          sudo apt-get remove php5.6-fpm php7.0-fpm php7.1-fpm php7.2-fpm php7.3-fpm php7.3-common php7.4-fpm msodbcsql17
+          sudo apt-get update
+          sudo ACCEPT_EULA=Y apt-get upgrade -y
+
+          # base deps
+          sudo apt-get install -y \
+                              build-essential \
+                              libgl1-mesa-dev \
+                              ninja-build \
+                              cmake \
+                              git
+          curl https://nim-lang.org/choosenim/init.sh -sSf | sh
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 9
+          git clone https://github.com/KomodoPlatform/libwally-core.git
+          cd libwally-core
+          ./tools/autogen.sh
+          ./configure --disable-shared
+          sudo make -j2 install
+
+          # set clang version
+          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-9 100
+          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-9 100
+
+      - name: Build (Linux)
+        env:
+          QT_INSTALL_CMAKE_PATH: ~/Qt/5.14.1/gcc/lib/cmake
+          QT_ROOT: ~/Qt/5.14.1
+        run: |
+          cd ci_tools_atomic_dex
+          ls -la ../
+          nimble build
+          ./ci_tools_atomic_dex build debug
+          ls -la ../
+          ./ci_tools_atomic_dex build release
+          ls -la ../
+
+#      - name: Upload artifacts (Linux)
+#        uses: actions/upload-artifact@v1
+#        with:
+#          name: atomicdexpro-linux.tar.gz
+#          path: ./tbd

@@ -1,0 +1,42 @@
+name: AtomicDEX Pro Win CI
+
+on: [pull_request, push]
+
+jobs:
+
+  windows-build:
+    name: Win Build
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install QT (Win)
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: '5.14.1'
+          host: 'windows'
+          target: 'desktop'
+          dir: '${{ github.workspace }}'
+
+      - name: Install deps (Win)
+        shell: ps
+        run: |
+          Set-ExecutionPolicy RemoteSigned -scope CurrentUser
+          Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+
+          scoop install nim --global
+          scoop install llvm --global
+          scoop install ninja --global
+          scoop install cmake --global
+          scoop install git --global
+
+      - name: Build (Win)
+        env:
+          QT_INSTALL_CMAKE_PATH: ${{ github.workspace }}\Qt\5.14.1\msvc2017_64
+        shell: ps
+        run: |
+          cd ci_tools_atomic_dex
+          nimble build
+          ./ci_tools_atomic_dex.exe build release
+          ./ci_tools_atomic_dex.exe build debug          
