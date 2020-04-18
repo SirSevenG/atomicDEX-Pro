@@ -34,6 +34,6 @@ jobs:
           scoop install git --global
 
           cd ci_tools_atomic_dex
-          nimble.exe build
+          nimble.exe build -y
           ./ci_tools_atomic_dex.exe build release
           ./ci_tools_atomic_dex.exe build debug
