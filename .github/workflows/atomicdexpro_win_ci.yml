@@ -35,5 +35,5 @@ jobs:
 
           cd ci_tools_atomic_dex
           nimble.exe build -y
-          ./ci_tools_atomic_dex.exe build release
-          ./ci_tools_atomic_dex.exe build debug
+          cmd /c 'ci_tools_atomic_dex.exe build release 2>&1'
+          cmd /c 'ci_tools_atomic_dex.exe build debug 2>&1'
