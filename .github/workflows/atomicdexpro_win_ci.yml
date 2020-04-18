@@ -20,7 +20,7 @@ jobs:
           dir: '${{ github.workspace }}'
 
       - name: Install deps (Win)
-        shell: ps
+        shell: powershell
         run: |
           Set-ExecutionPolicy RemoteSigned -scope CurrentUser
           Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
@@ -34,8 +34,9 @@ jobs:
       - name: Build (Win)
         env:
           QT_INSTALL_CMAKE_PATH: ${{ github.workspace }}\Qt\5.14.1\msvc2017_64
-        shell: ps
+        shell: powershell
         run: |
+          # $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\5.14.2\msvc2017_64" -- example
           cd ci_tools_atomic_dex
           nimble build
           ./ci_tools_atomic_dex.exe build release

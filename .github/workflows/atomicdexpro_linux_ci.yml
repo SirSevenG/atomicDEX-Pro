@@ -6,7 +6,7 @@ jobs:
 
   linux-build:
     name: Linux Build
-    runs-on: ubuntu-bionic
+    runs-on: ubuntu-18.04
 
     steps:
       - uses: actions/checkout@v2
@@ -54,12 +54,12 @@ jobs:
           QT_ROOT: ~/Qt/5.14.1
         run: |
           cd ci_tools_atomic_dex
-          ls -la ../
-          nimble build
+          ls -la
+          yes | nimble build
           ./ci_tools_atomic_dex build debug
-          ls -la ../
+          ls -la
           ./ci_tools_atomic_dex build release
-          ls -la ../
+          ls -la
 
 #      - name: Upload artifacts (Linux)
 #        uses: actions/upload-artifact@v1

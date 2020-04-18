@@ -35,12 +35,12 @@ jobs:
           QT_ROOT: ${{ github.workspace }}/Qt/5.14.1
         run: |
           cd ci_tools_atomic_dex
-          ls -la ../
-          nimble build
+          ls -la
+          yes | nimble build
           ./ci_tools_atomic_dex build debug
-          ls -la ../
+          ls -la
           ./ci_tools_atomic_dex build release
-          ls -la ../
+          ls -la
 
 #      - name: Upload artifacts (MacOS)
 #        uses: actions/upload-artifact@v1
