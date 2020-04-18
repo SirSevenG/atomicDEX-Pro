@@ -32,11 +32,10 @@ jobs:
           scoop install git --global
 
       - name: Build (Win)
-        env:
+        env:    # $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\5.14.2\msvc2017_64" -- example for pwsh
           QT_INSTALL_CMAKE_PATH: ${{ github.workspace }}\Qt\5.14.1\msvc2017_64
         shell: powershell
         run: |
-          # $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\5.14.2\msvc2017_64" -- example
           cd ci_tools_atomic_dex
           nimble build
           ./ci_tools_atomic_dex.exe build release

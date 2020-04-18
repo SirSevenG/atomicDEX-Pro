@@ -28,12 +28,11 @@ jobs:
           sudo ACCEPT_EULA=Y apt-get upgrade -y
 
           # base deps
-          sudo apt-get install -y \
-                              build-essential \
-                              libgl1-mesa-dev \
-                              ninja-build \
-                              cmake \
-                              git
+          sudo apt-get install build-essential \
+                               libgl1-mesa-dev \
+                               ninja-build \
+                               cmake \
+                               git -y
           curl https://nim-lang.org/choosenim/init.sh -sSf | sh
           wget https://apt.llvm.org/llvm.sh
           chmod +x llvm.sh
