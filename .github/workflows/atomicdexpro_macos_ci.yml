@@ -36,7 +36,7 @@ jobs:
         run: |
           cd ci_tools_atomic_dex
           ls -la
-          yes | nimble build
+          nimble build -y
           ./ci_tools_atomic_dex build debug
           ls -la
           ./ci_tools_atomic_dex build release

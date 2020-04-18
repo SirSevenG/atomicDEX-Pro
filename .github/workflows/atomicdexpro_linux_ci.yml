@@ -58,7 +58,7 @@ jobs:
           cd ci_tools_atomic_dex
           export PATH=$HOME/.nimble/bin:$PATH
           ls -la
-          yes | nimble build
+          nimble build -y
           ./ci_tools_atomic_dex build debug
           ls -la
           ./ci_tools_atomic_dex build release
