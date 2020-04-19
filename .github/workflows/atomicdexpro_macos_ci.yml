@@ -22,6 +22,7 @@ jobs:
 
       - name: Install deps (MacOS)
         run: |
+          ls -la ${{ github.workspace }}/Qt/5.14.1/
           ls -la ${{ github.workspace }}/Qt/5.14.1/gcc/lib/cmake
           brew update
           brew upgrade
