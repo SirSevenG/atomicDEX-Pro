@@ -18,6 +18,7 @@ jobs:
           host: 'linux'
           target: 'desktop'
           dir: '${{ github.workspace }}'
+          modules: 'qtcharts debug_info'
 
       - name: Install deps (Linux)
         env:
