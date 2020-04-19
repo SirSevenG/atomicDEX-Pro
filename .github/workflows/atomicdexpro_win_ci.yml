@@ -34,8 +34,9 @@ jobs:
           scoop install cmake --global
           scoop install git --global
 
-          vcpkg install doctest
-
           cd ci_tools_atomic_dex
           nimble.exe build -y
+
+          vcpkg.exe install doctest
+
           cmd /c 'ci_tools_atomic_dex.exe build debug 2>&1'
