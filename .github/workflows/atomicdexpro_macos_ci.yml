@@ -37,7 +37,7 @@ jobs:
                        gcc
 
           # get libbitcoin
-          git clone https://github.com/bitcoin/secp256k1
+          git clone --depth 1 --branch version5 --single-branch "https://github.com/libbitcoin/secp256k1"
           cd secp256k1
           ./autogen.sh
           ./configure
@@ -63,8 +63,8 @@ jobs:
           nimble build -y
           ./ci_tools_atomic_dex build debug
           ls -la
-          # ./ci_tools_atomic_dex build release
-          # ls -la
+          ./ci_tools_atomic_dex bundle debug
+          ls -la
 
 #      - name: Upload artifacts (MacOS)
 #        uses: actions/upload-artifact@v1
