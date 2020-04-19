@@ -18,7 +18,7 @@ jobs:
           host: 'windows'
           target: 'desktop'
           dir: '${{ github.workspace }}'
-          modules: 'qtcharts debug_info'
+          modules: 'qtcharts qtwidgets debug_info'
 
       - name: Build (Win)
         env:    # $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\5.14.2\msvc2017_64" -- example for pwsh
