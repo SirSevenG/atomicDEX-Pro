@@ -51,6 +51,10 @@ jobs:
           sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-9 100
           sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-9 100
 
+          # cleanup
+          sudo apt-get clean && \
+          sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
       - name: Build (Linux)
         env:
           QT_INSTALL_CMAKE_PATH: ${{ github.workspace }}/Qt/5.14.1/gcc/lib/cmake
