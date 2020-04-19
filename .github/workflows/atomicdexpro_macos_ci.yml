@@ -37,6 +37,14 @@ jobs:
                        gcc
 
           # get libbitcoin
+          git clone https://github.com/bitcoin/secp256k1
+          cd secp256k1
+          ./autogen.sh
+          ./configure
+          make
+          sudo make install
+          cd ../
+
           git clone https://github.com/KomodoPlatform/libbitcoin-system.git
           cd libbitcoin-system
           ./autogen.sh
