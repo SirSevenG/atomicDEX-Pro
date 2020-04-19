@@ -36,9 +36,13 @@ jobs:
                        gcc
 
           # get libbitcoin
-          wget https://raw.githubusercontent.com/KomodoPlatform/libbitcoin-system/version3/install.sh
-          chmod +x install.sh
-          ./install.sh --build-boost --disable-shared
+          git clone https://github.com/KomodoPlatform/libbitcoin-system.git
+          cd libbitcoin-system
+          ./autogen.sh
+          ./configure
+          make
+          sudo make install
+          sudo ldconfig
 
       - name: Build (MacOS)
         env:
