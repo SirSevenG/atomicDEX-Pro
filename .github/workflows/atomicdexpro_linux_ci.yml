@@ -41,6 +41,7 @@ jobs:
                                libtool \
                                autoconf \
                                unzip \
+                               libssl-dev \
                                git -y
           # get right cmake version
           wget https://github.com/Kitware/CMake/releases/download/v3.17.1/cmake-3.17.1.tar.gz -O cmake.tar.gz

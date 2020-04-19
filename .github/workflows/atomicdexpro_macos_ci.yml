@@ -41,7 +41,6 @@ jobs:
           cd secp256k1
           ./autogen.sh
           ./configure
-          make
           sudo make install
           cd ../
 
@@ -49,7 +48,6 @@ jobs:
           cd libbitcoin-system
           ./autogen.sh
           ./configure
-          make
           sudo make install
           sudo ldconfig
 
