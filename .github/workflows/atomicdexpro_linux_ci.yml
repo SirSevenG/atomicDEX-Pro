@@ -77,7 +77,7 @@ jobs:
 
       - name: Build (Linux)
         env:
-          QT_INSTALL_CMAKE_PATH: ${{ github.workspace }}/Qt/5.14.1/gcc/lib/cmake
+          QT_INSTALL_CMAKE_PATH: ${{ github.workspace }}/Qt/5.14.1/gcc_64/lib/cmake
           QT_ROOT: ${{ github.workspace }}/Qt/5.14.1
         run: |
           cd ci_tools_atomic_dex
