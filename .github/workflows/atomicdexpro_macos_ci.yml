@@ -24,11 +24,21 @@ jobs:
         run: |
           brew update
           brew upgrade
-          brew install nim \
+          brew install autoconf \
+                       automake \
+                       libtool \
+                       pkgconfig \
+                       wget \
+                       nim \
                        cmake \
                        ninja \
                        git \
                        gcc
+
+          # get libbitcoin
+          wget https://raw.githubusercontent.com/KomodoPlatform/libbitcoin-system/version3/install.sh
+          chmod +x install.sh
+          ./install.sh --build-boost --disable-shared
 
       - name: Build (MacOS)
         env:
