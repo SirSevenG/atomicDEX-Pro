@@ -75,10 +75,6 @@ jobs:
           sudo apt-get clean && \
           sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-          ls -la ${{ github.workspace }}/Qt/5.14.1
-          ls -la ${{ github.workspace }}/Qt/5.14.1/gcc/lib/cmake
-          ls -la ${{ github.workspace }}/Qt/5.14.1/gcc_64/lib/cmake
-
       - name: Build (Linux)
         env:
           QT_INSTALL_CMAKE_PATH: ${{ github.workspace }}/Qt/5.14.1/gcc/lib/cmake
