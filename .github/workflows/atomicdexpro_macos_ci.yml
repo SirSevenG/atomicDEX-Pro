@@ -22,8 +22,7 @@ jobs:
 
       - name: Install deps (MacOS)
         run: |
-          ls -la ${{ github.workspace }}/Qt/5.14.1/
-          ls -la ${{ github.workspace }}/Qt/5.14.1/gcc/lib/cmake
+          ls -la ${{ github.workspace }}/Qt/5.14.1/clang_64/lib/cmake
           brew update
           brew upgrade
           brew install autoconf \
@@ -55,7 +54,7 @@ jobs:
 
       - name: Build (MacOS)
         env:
-          QT_INSTALL_CMAKE_PATH: ${{ github.workspace }}/Qt/5.14.1/gcc/lib/cmake
+          QT_INSTALL_CMAKE_PATH: ${{ github.workspace }}/Qt/5.14.1/clang_64/lib/cmake
           QT_ROOT: ${{ github.workspace }}/Qt/5.14.1
         run: |
           cd ci_tools_atomic_dex
