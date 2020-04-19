@@ -1,0 +1,49 @@
+name: AtomicDEX Pro MacOS CI
+
+on: [pull_request, push]
+
+jobs:
+
+  macos-build:
+    name: MacOS Build
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install QT (MacOS)
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: '5.14.1'
+          host: 'mac'
+          target: 'desktop'
+          dir: '${{ github.workspace }}'
+
+      - name: Install deps (MacOS)
+        run: |
+          brew update
+          brew upgrade
+          brew install nim \
+                       cmake \
+                       ninja \
+                       git \
+                       gcc
+
+      - name: Build (MacOS)
+        env:
+          QT_INSTALL_CMAKE_PATH: ${{ github.workspace }}/Qt/5.14.1/gcc/lib/cmake
+          QT_ROOT: ${{ github.workspace }}/Qt/5.14.1
+        run: |
+          cd ci_tools_atomic_dex
+          ls -la
+          nimble build -y
+          ./ci_tools_atomic_dex build debug
+          ls -la
+          ./ci_tools_atomic_dex build release
+          ls -la
+
+#      - name: Upload artifacts (MacOS)
+#        uses: actions/upload-artifact@v1
+#        with:
+#          name: atomicdexpro-linux.tar.gz
+#          path: ./tbd
