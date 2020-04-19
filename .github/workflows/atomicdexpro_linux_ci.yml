@@ -86,21 +86,13 @@ jobs:
         run: |
           cd ci_tools_atomic_dex
           export PATH=$HOME/.nimble/bin:$PATH
-          ls -la
           nimble build -y
           ./ci_tools_atomic_dex build debug
-          ls -la
-          ls -la build-Debug
-          ls -la src
-          ls -la installer
           ./ci_tools_atomic_dex bundle debug
-          ls -la
-          ls -la build-Debug
-          ls -la build-Debug/bin
-          ls -la installer
+          tar cvzf dexpro-linux-debug.tar.gz build-Debug
 
-#      - name: Upload artifacts (Linux)
-#        uses: actions/upload-artifact@v1
-#        with:
-#          name: atomicdexpro-linux.tar.gz
-#          path: ./tbd
+      - name: Upload artifacts (Linux)
+        uses: actions/upload-artifact@v1
+        with:
+          name: dexpro-linux-debug.tar.gz
+          path: ./ci_tools_atomic_dex/dexpro-linux-debug.tar.gz
