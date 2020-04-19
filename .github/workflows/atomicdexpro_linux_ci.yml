@@ -42,12 +42,12 @@ jobs:
                                autoconf \
                                unzip \
                                git -y
-          # get right cmake version -- done in build step via build script
-          # wget https://github.com/Kitware/CMake/releases/download/v3.17.1/cmake-3.17.1.tar.gz -O cmake.tar.gz
-          # tar xvzf cmake.tar.gz
-          # cd cmake-3.17.1
-          # ./bootstrap
-          # sudo make install
+          # get right cmake version
+          wget https://github.com/Kitware/CMake/releases/download/v3.17.1/cmake-3.17.1.tar.gz -O cmake.tar.gz
+          tar xvzf cmake.tar.gz
+          cd cmake-3.17.1
+          ./bootstrap
+          sudo make install
 
           # get nim
           wget  https://nim-lang.org/choosenim/init.sh -O choosenim.sh
@@ -95,7 +95,7 @@ jobs:
           ./ci_tools_atomic_dex bundle debug
           ls -la
           ls -la build-Debug
-          ls -la src
+          ls -la build-Debug/bin
           ls -la installer
 
 #      - name: Upload artifacts (Linux)
