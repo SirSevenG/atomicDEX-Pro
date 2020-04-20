@@ -25,6 +25,7 @@ jobs:
           QT_INSTALL_CMAKE_PATH: ${{ github.workspace }}\Qt\5.14.1\msvc2017_64
         shell: powershell
         run: |
+          ls ${{ github.workspace }}\Qt\5.14.1\msvc2017_64
           Set-ExecutionPolicy RemoteSigned -scope CurrentUser
           Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
 
