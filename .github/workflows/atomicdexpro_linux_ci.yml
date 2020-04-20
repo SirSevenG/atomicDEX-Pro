@@ -77,8 +77,8 @@ jobs:
 
       - name: Build (Linux)
         uses: jiro4989/setup-nim-action@v1.0.2
-          with:
-            nim-version: '1.2.0'
+        with:
+          nim-version: '1.2.0'
         env:
           QT_INSTALL_CMAKE_PATH: ${{ github.workspace }}/Qt/5.14.1/gcc_64/lib/cmake
           QT_ROOT: ${{ github.workspace }}/Qt/5.14.1
