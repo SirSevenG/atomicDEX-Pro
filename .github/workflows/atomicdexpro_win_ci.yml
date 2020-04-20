@@ -25,6 +25,7 @@ jobs:
           QT_INSTALL_CMAKE_PATH: ${{ github.workspace }}\Qt\5.14.1\msvc2017_64
         shell: powershell
         run: |
+          ls ${{ github.workspace }}\Qt\5.14.1\msvc2017_64
           Set-ExecutionPolicy RemoteSigned -scope CurrentUser
           Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
 
@@ -35,8 +36,9 @@ jobs:
           scoop install git --global
 
           cd ci_tools_atomic_dex
+          $file = 'src\generate.nim'
+          $regex = '(?<=g_vcpkg_cmake_script_path & ")[^"]*'
+          (Get-Content $file) -replace $regex, ' -DVCPKG_TARGET_TRIPLET=x64-windows ' | Set-Content $file
           nimble.exe build -y
-
-          vcpkg.exe install doctest
 
           cmd /c 'ci_tools_atomic_dex.exe build debug 2>&1'
