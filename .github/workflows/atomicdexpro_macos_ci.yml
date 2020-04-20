@@ -36,22 +36,7 @@ jobs:
                        git \
                        boost \
                        gcc
-
-          xcode-select --install
-          sleep 1
-          osascript <<EOD
-            tell application "System Events"
-              tell process "Install Command Line Developer Tools"
-                keystroke return
-                click button "Agree" of window "License Agreement"
-              end tell
-            end tell
-          EOD
-
-          # get libbitcoin
-          wget https://raw.githubusercontent.com/KomodoPlatform/libbitcoin-system/version3/install.sh
-          chmod +x install.sh
-          sudo ./install.sh --prefix=/bitcoin/ --build-boost --disable-shared
+          # xcode -- command line tools are provided by GH Actions runners
 
       - name: Build (MacOS)
         env:
