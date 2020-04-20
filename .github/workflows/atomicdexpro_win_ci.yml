@@ -42,3 +42,10 @@ jobs:
           nimble.exe build -y
 
           cmd /c 'ci_tools_atomic_dex.exe build debug 2>&1'
+          cmd /c 'ci_tools_atomic_dex.exe bundle debug 2>&1'
+
+      - name: Upload artifacts (Windows)
+        uses: actions/upload-artifact@v1
+        with:
+          name: dexpro-win-debug.zip
+          path: ./ci_tools_atomic_dex/bundle-Debug/bundle.zip
