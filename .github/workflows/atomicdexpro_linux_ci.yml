@@ -51,9 +51,9 @@ jobs:
           sudo make install
 
           # get nim
-          wget  https://nim-lang.org/choosenim/init.sh -O choosenim.sh
-          chmod +x choosenim.sh
-          ./choosenim.sh -y
+          # wget  https://nim-lang.org/choosenim/init.sh -O choosenim.sh
+          # chmod +x choosenim.sh
+          # ./choosenim.sh -y
 
           # get llvm
           wget https://apt.llvm.org/llvm.sh
@@ -76,6 +76,9 @@ jobs:
           sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
       - name: Build (Linux)
+        uses: jiro4989/setup-nim-action@v1.0.2
+          with:
+            nim-version: '1.2.0'
         env:
           QT_INSTALL_CMAKE_PATH: ${{ github.workspace }}/Qt/5.14.1/gcc_64/lib/cmake
           QT_ROOT: ${{ github.workspace }}/Qt/5.14.1
