@@ -35,8 +35,9 @@ jobs:
           scoop install git --global
 
           cd ci_tools_atomic_dex
+          $file = 'src\generate.nim'
+          $regex = '(?<=g_vcpkg_cmake_script_path & ")[^"]*'
+          (Get-Content $file) -replace $regex, ' -DVCPKG_TARGET_TRIPLET=x64-windows ' | Set-Content $file
           nimble.exe build -y
-
-          vcpkg.exe install doctest
 
           cmd /c 'ci_tools_atomic_dex.exe build debug 2>&1'
