@@ -22,7 +22,6 @@ jobs:
 
       - name: Install deps (MacOS)
         run: |
-          ls -la ${{ github.workspace }}/Qt/5.14.1/clang_64/lib/cmake
           brew update
           brew upgrade
           brew install autoconf \
@@ -38,18 +37,20 @@ jobs:
                        gcc
 
           # get libbitcoin
-          git clone --depth 1 --branch version4 --single-branch "https://github.com/libbitcoin/secp256k1"
+          git clone --depth 1 --branch version6 --single-branch "https://github.com/libbitcoin/secp256k1"
           cd secp256k1
           ./autogen.sh
           ./configure
-          sudo make install  --disable-shared
+          make
+          sudo make instal
           cd ../
 
           git clone --depth 1 --branch version3 --single-branch https://github.com/KomodoPlatform/libbitcoin-system.git
           cd libbitcoin-system
           ./autogen.sh
           ./configure
-          sudo make install --build-boost --disable-shared
+          make --build-boost --disable-shared
+          sudo make install
           sudo ldconfig
 
       - name: Build (MacOS)
