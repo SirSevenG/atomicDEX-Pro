@@ -54,17 +54,16 @@ jobs:
           sudo update_dyld_shared_cache
 
       - name: Build (MacOS)
-        env:
-          QT_INSTALL_CMAKE_PATH: ${{ github.workspace }}/Qt/5.14.1/clang_64/lib/cmake
-          QT_ROOT: ${{ github.workspace }}/Qt/5.14.1
         run: |
+          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.14.1/clang_64/lib/cmake
+          export QT_ROOT=${{ github.workspace }}/Qt/5.14.1
           cd ci_tools_atomic_dex
-          ls -la
+          ls
           nimble build -y
           ./ci_tools_atomic_dex build debug
-          ls -la build-*
+          ls build-*
           ./ci_tools_atomic_dex bundle debug
-          ls -la bundle-*
+          ls bundle-*
 
 #      - name: Upload artifacts (MacOS)
 #        uses: actions/upload-artifact@v1
