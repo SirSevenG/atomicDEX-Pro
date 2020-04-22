@@ -42,14 +42,14 @@ jobs:
           cd secp256k1
           ./autogen.sh
           ./configure
-          sudo make install
+          sudo make install  --disable-shared
           cd ../
 
           git clone --depth 1 --branch version3 --single-branch https://github.com/KomodoPlatform/libbitcoin-system.git
           cd libbitcoin-system
           ./autogen.sh
           ./configure
-          sudo make install
+          sudo make install --build-boost --disable-shared
           sudo ldconfig
 
       - name: Build (MacOS)
