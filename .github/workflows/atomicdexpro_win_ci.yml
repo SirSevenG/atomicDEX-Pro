@@ -53,8 +53,7 @@ jobs:
           nimble.exe build -y
           gdr
 
-          <# Manually installing deps to manage buildtrees for disk space. Ugly AF #>
-          git clone https://github.com/KomodoPlatform/vcpkg vcpkg-repo
+          & cmd /c 'git clone https://github.com/KomodoPlatform/vcpkg vcpkg-repo 2>&1'
           cd vcpkg-repo
           .\bootstrap-vcpkg.bat
           .\vcpkg.exe integrate install
