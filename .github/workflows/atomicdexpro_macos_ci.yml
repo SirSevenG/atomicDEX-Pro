@@ -48,7 +48,7 @@ jobs:
           git clone --depth 1 --branch version3 --single-branch https://github.com/KomodoPlatform/libbitcoin-system.git
           cd libbitcoin-system
           ./autogen.sh
-          ./configure --build-boost --disable-shared
+          ./configure --with-boost=/usr/local --disable-shared
           make
           sudo make install
           sudo ldconfig
