@@ -42,7 +42,7 @@ jobs:
           ./autogen.sh
           ./configure
           make
-          sudo make instal
+          sudo make install
           cd ../
 
           git clone --depth 1 --branch version3 --single-branch https://github.com/KomodoPlatform/libbitcoin-system.git
