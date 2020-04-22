@@ -25,6 +25,7 @@ jobs:
           QT_INSTALL_CMAKE_PATH: ${{ github.workspace }}\Qt\5.14.1\msvc2017_64
         shell: powershell
         run: |
+          gdr
           ls ${{ github.workspace }}\Qt\5.14.1\msvc2017_64
           Set-ExecutionPolicy RemoteSigned -scope CurrentUser
           Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
@@ -34,6 +35,7 @@ jobs:
           scoop install ninja --global
           scoop install cmake --global
           scoop install git --global
+          gdr
 
           # clear scoop cache
           scoop cache rm 7zip
@@ -42,15 +44,19 @@ jobs:
           scoop cache rm ninja
           scoop cache rm llvm
           scoop cache rm nim
+          gdr
 
           cd ci_tools_atomic_dex
           $file = 'src\generate.nim'
           $regex = '(?<=g_vcpkg_cmake_script_path & ")[^"]*'
           (Get-Content $file) -replace $regex, ' -DVCPKG_TARGET_TRIPLET=x64-windows ' | Set-Content $file
           nimble.exe build -y
+          gdr
 
           cmd /c 'ci_tools_atomic_dex.exe build debug 2>&1'
+          gdr
           cmd /c 'ci_tools_atomic_dex.exe bundle debug 2>&1'
+          gdr
 
       - name: Upload artifacts (Windows)
         uses: actions/upload-artifact@v1
