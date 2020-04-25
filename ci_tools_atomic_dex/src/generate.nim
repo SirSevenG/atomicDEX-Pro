@@ -19,7 +19,7 @@ proc generate_solution*(build_type: string, osx_sdk_path: string, compiler_path:
     os.setCurrentDir(os.getCurrentDir().joinPath(full_name))
     assert(os.existsEnv("QT_INSTALL_CMAKE_PATH"))
     var cmd_line = "cmake -GNinja -DCMAKE_BUILD_TYPE=" &  build_type & " -DCMAKE_TOOLCHAIN_FILE=" & 
-                    g_vcpkg_cmake_script_path & " -DVCPKG_TARGET_TRIPLET=x64-windows " &
+                    g_vcpkg_cmake_script_path & " " &
                     os.getCurrentDir().parentDir().parentDir() & " -DCMAKE_PREFIX_PATH=" & os.getEnv("QT_INSTALL_CMAKE_PATH")
     when defined(osx):
         cmd_line = cmd_line & " -DVCPKG_APPLOCAL_DEPS=OFF"
