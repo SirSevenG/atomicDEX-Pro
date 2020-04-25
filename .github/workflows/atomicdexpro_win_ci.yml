@@ -104,6 +104,7 @@ jobs:
           rd -r ".\downloads\" -ErrorAction SilentlyContinue
           gdr
 
+          cd ..
           cmd /c '.\ci_tools_atomic_dex.exe bundle debug 2>&1'
           gdr
 
