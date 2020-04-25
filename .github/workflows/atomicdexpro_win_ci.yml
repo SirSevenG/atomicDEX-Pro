@@ -90,7 +90,7 @@ jobs:
           .\vcpkg.exe install date
           rd -r ".\buildtrees\"
           rd -r ".\downloads\"
-          .\vcpkg.exe install threads
+          .\vcpkg.exe install pthreads
           rd -r ".\buildtrees\"
           rd -r ".\downloads\"
           .\vcpkg.exe install zlib
