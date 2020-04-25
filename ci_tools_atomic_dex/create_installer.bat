@@ -7,9 +7,13 @@ set config_file=%installer_folder%\config\config.xml
 set packages_folder=%installer_folder%\packages
 set icon_file=%root_folder%\app_icon.ico
 set manifest_file=%installer_folder%\atomic_qt.exe.manifest
+set vcpkg_deps_folder=vcpkg-repo\installed\x64-windows\bin\
 
 REM Delete old data
 @RD /S /Q "%installer_data%"
+
+REM Copy deps from vcpkg-repo
+for /R "%vcpkg_deps_folder%" %%f in (*.dll) do copy %%f "%build_folder%"
 
 REM Copy new data
 echo D | xcopy "%build_folder%" "%installer_data%" /E
