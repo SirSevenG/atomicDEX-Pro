@@ -71,21 +71,22 @@ proc bundle*(build_type: string, osx_sdk_path: string, compiler_path: string) =
         let 
             build_path =  os.getCurrentDir().parentDir().joinPath("build-" & build_type).joinPath("bin")
             mm2_path =  os.getCurrentDir().parentDir().joinPath("build-" & build_type).joinPath("bin").joinPath("assets").joinPath("tools").joinPath("mm2")
-            dll_path   = os.getCurrentDir().parentDir().joinPath("windows_misc")
+            dll_path   = os.getCurrentDir().parentDir().joinPath("vcpkg-repo").joinPath("installed").joinPath("x64-windows").joinPath("bin")
+            dll_path2   = os.getCurrentDir().parentDir().joinPath("windows_misc")
             bundle_path = os.getCurrentDir().parentDir().joinPath("bundle-" & build_type)
             #Copy-Item C:\Code\Trunk -Filter *.csproj.user -Destination C:\Code\F2 -Recurse
             pwsh_cmd = "Get-ChildItem " & dll_path & " | Copy-Item -Destination " & build_path & " -Recurse -filter *.dll"
+            pwsh_cmd2 = "Get-ChildItem " & dll_path2 & " | Copy-Item -Destination " & build_path & " -Recurse -filter *.dll"
             pwsh_cmd_mm2 = "Get-ChildItem " & dll_path & " | Copy-Item -Destination " & mm2_path & " -Recurse -filter *.dll"
             copy_dll_cmd = "powershell.exe -nologo -noprofile -command \"& { " & pwsh_cmd & " }\""
+            copy_dll_cmd2 = "powershell.exe -nologo -noprofile -command \"& { " & pwsh_cmd2 & " }\""
             copy_dll_mm2_cmd = "powershell.exe -nologo -noprofile -command \"& { " & pwsh_cmd_mm2 & " }\""
             bundle_cmd = "powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('bin', 'bin.zip'); }\""
             
         echo copy_dll_cmd
         discard osproc.execCmd(copy_dll_cmd)
+        discard osproc.execCmd(copy_dll_cmd2)
         discard osproc.execCmd(copy_dll_mm2_cmd)
         discard osproc.execCmd(bundle_cmd)
         discard os.existsOrCreateDir(bundle_path)
         os.moveFile("bin.zip", bundle_path.joinPath("bundle.zip"))
-
-
-    
