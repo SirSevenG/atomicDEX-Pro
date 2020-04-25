@@ -89,7 +89,6 @@ jobs:
           export PATH=$HOME/.nimble/bin:$PATH
           nimble build -y
           ./ci_tools_atomic_dex build debug
-          ./ci_tools_atomic_dex bundle debug
           tar cvzf dexpro-linux-debug.tar.gz build-Debug
 
       - name: Upload artifacts (Linux)
