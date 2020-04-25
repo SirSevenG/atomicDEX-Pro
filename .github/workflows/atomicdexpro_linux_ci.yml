@@ -79,6 +79,14 @@ jobs:
           # cleanup
           sudo apt-get clean && \
           sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+          git clone https://github.com/KomodoPlatform/vcpkg vcpkg-repo
+          cd vcpkg-repo
+          ./bootstrap-vcpkg.sh
+          sudo ./vcpkg integrate install
+          ./vcpkg install doctest
+          ./vcpkg install pthread
+          rm -rf ./downloads
+          rm -rf ./buildtrees
 
       - name: Build (Linux)
         env:
@@ -89,6 +97,8 @@ jobs:
           export PATH=$HOME/.nimble/bin:$PATH
           nimble build -y
           ./ci_tools_atomic_dex build debug
+          rm -rf ./vcpkg-repo/downloads
+          rm -rf ./vcpkg-repo/buildtrees
           tar cvzf dexpro-linux-debug.tar.gz build-Debug
 
       - name: Upload artifacts (Linux)
