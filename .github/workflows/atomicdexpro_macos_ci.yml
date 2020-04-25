@@ -60,7 +60,6 @@ jobs:
           cd ci_tools_atomic_dex
           ls
           nimble build -y
-          ls build-*
           ./ci_tools_atomic_dex bundle debug
           ls bundle-*
 
