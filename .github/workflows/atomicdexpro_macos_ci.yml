@@ -65,7 +65,7 @@ jobs:
           ./ci_tools_atomic_dex bundle debug
           ls bundle-*
 
-     - name: Upload artifacts (MacOS)
+      - name: Upload artifacts (MacOS)
         uses: actions/upload-artifact@v1
         with:
           name: dexpro-mac-debug.zip
