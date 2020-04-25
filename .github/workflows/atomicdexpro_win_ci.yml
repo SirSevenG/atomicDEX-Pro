@@ -58,50 +58,50 @@ jobs:
           .\bootstrap-vcpkg.bat
           .\vcpkg.exe integrate install
           .\vcpkg.exe install entt
-          rd -r ".\buildtrees\"
-          rd -r ".\downloads\"
+          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
+          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install folly
-          rd -r ".\buildtrees\"
-          rd -r ".\downloads\"
+          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
+          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install boost-multiprecision
-          rd -r ".\buildtrees\"
-          rd -r ".\downloads\"
+          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
+          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install boost-random
-          rd -r ".\buildtrees\"
-          rd -r ".\downloads\"
+          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
+          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install doctest
-          rd -r ".\buildtrees\"
-          rd -r ".\downloads\"
+          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
+          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install fmt
-          rd -r ".\buildtrees\"
-          rd -r ".\downloads\"
+          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
+          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install curl
-          rd -r ".\buildtrees\"
-          rd -r ".\downloads\"
+          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
+          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install nlohmann-json
-          rd -r ".\buildtrees\"
-          rd -r ".\downloads\"
+          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
+          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install range-v3
-          rd -r ".\buildtrees\"
-          rd -r ".\downloads\"
+          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
+          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install libsodium
-          rd -r ".\buildtrees\"
-          rd -r ".\downloads\"
+          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
+          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install date
-          rd -r ".\buildtrees\"
-          rd -r ".\downloads\"
+          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
+          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install pthreads
-          rd -r ".\buildtrees\"
-          rd -r ".\downloads\"
+          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
+          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install zlib
-          rd -r ".\buildtrees\"
-          rd -r ".\downloads\"
+          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
+          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install gtest
-          rd -r ".\buildtrees\"
-          rd -r ".\downloads\"
+          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
+          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install jsoncpp
-          rd -r ".\buildtrees\"
-          rd -r ".\downloads\"
+          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
+          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           gdr
 
           cmd /c 'ci_tools_atomic_dex.exe build debug 2>&1'
