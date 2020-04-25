@@ -14,7 +14,7 @@ jobs:
       - name: Install QT (MacOS)
         uses: jurplel/install-qt-action@v2
         with:
-          version: '5.14.1'
+          version: '5.14.2'
           host: 'mac'
           target: 'desktop'
           dir: '${{ github.workspace }}'
@@ -55,8 +55,8 @@ jobs:
 
       - name: Build (MacOS)
         run: |
-          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.14.1/clang_64/lib/cmake
-          export QT_ROOT=${{ github.workspace }}/Qt/5.14.1
+          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.14.2/clang_64/lib/cmake
+          export QT_ROOT=${{ github.workspace }}/Qt/5.14.2
           cd ci_tools_atomic_dex
           ls
           nimble build -y
