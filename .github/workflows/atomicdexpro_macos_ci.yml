@@ -58,10 +58,8 @@ jobs:
           export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.14.2/clang_64/lib/cmake
           export QT_ROOT=${{ github.workspace }}/Qt/5.14.2
           cd ci_tools_atomic_dex
-          ls
           nimble build -y
           ./ci_tools_atomic_dex bundle debug
-          ls bundle-*
 
       - name: Upload artifacts (MacOS)
         uses: actions/upload-artifact@v1

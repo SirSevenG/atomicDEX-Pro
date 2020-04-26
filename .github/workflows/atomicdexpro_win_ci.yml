@@ -11,13 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Debug checker
-        shell: powershell
-        run: |
-          mkdir C:\Qt
-          ls C:\Qt
-          Get-WmiObject -Class Win32_logicaldisk
-
       - name: Install QT (Win)
         uses: jurplel/install-qt-action@v2
         with:
@@ -27,17 +20,11 @@ jobs:
           dir: 'C:\'
           modules: 'qtcharts qtwidgets debug_info'
 
-      - name: Debug checker2
-        shell: powershell
-        run: |
-          gdb
-
       - name: Build (Win)  # cmd /c 'ci_tools_atomic_dex.exe build release 2>&1' removed
         shell: powershell
         run: |
+          mkdir C:\Qt
           $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\5.14.1\msvc2017_64"
-          gdr
-          ls ${{ github.workspace }}\Qt\5.14.1\msvc2017_64
           Set-ExecutionPolicy RemoteSigned -scope CurrentUser
           Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
 
@@ -46,7 +33,6 @@ jobs:
           scoop install ninja --global
           scoop install cmake --global
           scoop install git --global
-          gdr
 
           # clear scoop cache
           scoop cache rm 7zip
@@ -55,14 +41,12 @@ jobs:
           scoop cache rm ninja
           scoop cache rm llvm
           scoop cache rm nim
-          gdr
 
           cd ci_tools_atomic_dex
           $file = 'src\generate.nim'
           $regex = '(?<=g_vcpkg_cmake_script_path & ")[^"]*'
           (Get-Content $file) -replace $regex, ' -DVCPKG_TARGET_TRIPLET=x64-windows ' | Set-Content $file
           nimble.exe build -y
-          gdr
 
           & cmd /c 'git clone https://github.com/KomodoPlatform/vcpkg vcpkg-repo 2>&1'
           cd vcpkg-repo
@@ -113,11 +97,9 @@ jobs:
           .\vcpkg.exe install jsoncpp
           rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
           rd -r ".\downloads\" -ErrorAction SilentlyContinue
-          gdr
 
           cd ..
           cmd /c '.\ci_tools_atomic_dex.exe bundle debug 2>&1'
-          gdr
 
       - name: Upload artifacts (Windows)
         uses: actions/upload-artifact@v1
