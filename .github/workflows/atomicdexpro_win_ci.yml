@@ -11,6 +11,34 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Debug checker
+        shell: powershell
+        run: |
+          mkdir C:\Qt
+          ls C:\Qt
+          Get-WmiObject -Class Win32_logicaldisk
+          $path = "$Env:Programfiles"
+          $colItems = Get-ChildItem $path | Where-Object {$_.PSIsContainer -eq $true} | Sort-Object
+          foreach ($i in $colItems)
+          {
+              $subFolderItems = Get-ChildItem $i.FullName -recurse -force | Where-Object {$_.PSIsContainer -eq $false} | Measure-Object -property Length -sum | Select-Object Sum
+              $i.FullName + " -- " + "{0:N2}" -f ($subFolderItems.sum / 1MB) + " MB"
+          }
+          $path = "D:\"
+          $colItems = Get-ChildItem $path | Where-Object {$_.PSIsContainer -eq $true} | Sort-Object
+          foreach ($i in $colItems)
+          {
+              $subFolderItems = Get-ChildItem $i.FullName -recurse -force | Where-Object {$_.PSIsContainer -eq $false} | Measure-Object -property Length -sum | Select-Object Sum
+              $i.FullName + " -- " + "{0:N2}" -f ($subFolderItems.sum / 1MB) + " MB"
+          }
+          $path = "C:\"
+          $colItems = Get-ChildItem $path | Where-Object {$_.PSIsContainer -eq $true} | Sort-Object
+          foreach ($i in $colItems)
+          {
+              $subFolderItems = Get-ChildItem $i.FullName -recurse -force | Where-Object {$_.PSIsContainer -eq $false} | Measure-Object -property Length -sum | Select-Object Sum
+              $i.FullName + " -- " + "{0:N2}" -f ($subFolderItems.sum / 1MB) + " MB"
+          }
+
       - name: Install QT (Win)
         uses: jurplel/install-qt-action@v2
         with:
