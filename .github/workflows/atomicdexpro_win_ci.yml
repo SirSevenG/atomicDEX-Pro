@@ -20,6 +20,18 @@ jobs:
           dir: '${{ github.workspace }}'
           modules: 'qtcharts qtwidgets debug_info'
 
+      - name: Debug checker
+        shell: powershell
+        run: |
+          Get-WmiObject -Class Win32_logicaldisk
+          $path = "$Env:Programfiles"
+          $colItems = Get-ChildItem $path | Where-Object {$_.PSIsContainer -eq $true} | Sort-Object
+          foreach ($i in $colItems)
+          {
+              $subFolderItems = Get-ChildItem $i.FullName -recurse -force | Where-Object {$_.PSIsContainer -eq $false} | Measure-Object -property Length -sum | Select-Object Sum
+              $i.FullName + " -- " + "{0:N2}" -f ($subFolderItems.sum / 1MB) + " MB"
+          }
+
       - name: Build (Win)  # cmd /c 'ci_tools_atomic_dex.exe build release 2>&1' removed
         env:    # $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\5.14.2\msvc2017_64" -- example for pwsh
           QT_INSTALL_CMAKE_PATH: ${{ github.workspace }}\Qt\5.14.1\msvc2017_64
