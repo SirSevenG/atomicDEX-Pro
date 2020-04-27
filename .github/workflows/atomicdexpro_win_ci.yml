@@ -52,47 +52,21 @@ jobs:
           .\bootstrap-vcpkg.bat
           .\vcpkg.exe integrate install
           .\vcpkg.exe install entt
-          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
-          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install folly
-          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
-          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install boost-multiprecision
-          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
-          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install boost-random
-          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
-          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install doctest
-          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
-          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install fmt
-          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
-          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install curl
-          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
-          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install nlohmann-json
           rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
           rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install range-v3
-          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
-          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install libsodium
-          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
-          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install date
-          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
-          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install pthreads
-          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
-          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install zlib
-          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
-          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install gtest
-          rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
-          rd -r ".\downloads\" -ErrorAction SilentlyContinue
           .\vcpkg.exe install jsoncpp
           rd -r ".\buildtrees\" -ErrorAction SilentlyContinue
           rd -r ".\downloads\" -ErrorAction SilentlyContinue
