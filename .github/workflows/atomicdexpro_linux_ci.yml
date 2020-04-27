@@ -102,11 +102,10 @@ jobs:
 
       - name: Pack Installer (Linux)
         run: |
-          export QT_IFW_PATH=${{ github.workspace }}/Qt/IFW
-          python3 -m aqt -O $QT_IFW_PATH tool linux tools_ifw 3.2 qt.tools.ifw.32
+          python3 -m aqt tool linux tools_ifw 3.2.2 qt.tools.ifw.32
+          export QT_IFW_PATH=$PWD/Tools/QtInstallerFramework/3.2/
           cd ci_tools_atomic_dex
           ./create_installer_linux.sh
-
 
 #      - name: Upload artifacts (Linux)
 #        uses: actions/upload-artifact@v1
