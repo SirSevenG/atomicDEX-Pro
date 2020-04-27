@@ -20,7 +20,7 @@ jobs:
           dir: 'C:\'
           modules: 'qtcharts qtwidgets debug_info'
 
-      - name: Build (Win)  # cmd /c 'ci_tools_atomic_dex.exe build release 2>&1' removed
+      - name: Build (Win)
         shell: powershell
         run: |
           $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\5.14.1\msvc2017_64"
@@ -98,7 +98,9 @@ jobs:
           rd -r ".\downloads\" -ErrorAction SilentlyContinue
 
           cd ..
+          cmd /c '.\ci_tools_atomic_dex.exe build debug 2>&1'
           cmd /c '.\ci_tools_atomic_dex.exe bundle debug 2>&1'
+          ls bundle-Debug/bundle.zip
 
       - name: Upload artifacts (Windows)
         uses: actions/upload-artifact@v1

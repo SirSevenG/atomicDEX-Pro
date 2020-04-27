@@ -60,6 +60,7 @@ jobs:
           cd ci_tools_atomic_dex
           nimble build -y
           ./ci_tools_atomic_dex bundle debug
+          ls bundle-Debug/atomicDEX-Pro.dmg
 
       - name: Upload artifacts (MacOS)
         uses: actions/upload-artifact@v1
