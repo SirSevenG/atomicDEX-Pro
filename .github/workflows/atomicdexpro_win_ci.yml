@@ -23,7 +23,6 @@ jobs:
       - name: Build (Win)  # cmd /c 'ci_tools_atomic_dex.exe build release 2>&1' removed
         shell: powershell
         run: |
-          mkdir C:\Qt
           $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\5.14.1\msvc2017_64"
           Set-ExecutionPolicy RemoteSigned -scope CurrentUser
           Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
