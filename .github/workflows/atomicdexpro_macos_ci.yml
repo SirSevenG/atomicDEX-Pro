@@ -65,5 +65,5 @@ jobs:
       - name: Upload artifacts (MacOS)
         uses: actions/upload-artifact@v1
         with:
-          name: dexpro-mac-debug.dmd
+          name: dexpro-mac-debug.dmg
           path: ./ci_tools_atomic_dex/bundle-Debug/atomicDEX-Pro.dmg
