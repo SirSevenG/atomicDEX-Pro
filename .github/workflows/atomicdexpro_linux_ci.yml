@@ -97,6 +97,10 @@ jobs:
 
       - name: Pack Installer (Linux)
         run: |
+          sudo apt-get update
+          sudo apt-get install libxrender-dev \
+                               libxkbcommon-dev \
+                               fontconfig-config -y
           python3 -m aqt tool linux tools_ifw 3.2.2 qt.tools.ifw.32
           export QT_IFW_PATH=$PWD/Tools/QtInstallerFramework/3.2/
           cd ci_tools_atomic_dex
