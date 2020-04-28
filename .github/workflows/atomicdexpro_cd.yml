@@ -1,11 +1,10 @@
 name: AtomicDex-Pro CD releases
 
-
 on:
   push:
     branches:
     - dev
-
+    - dev_ci
 
 jobs:
 
@@ -516,18 +515,36 @@ jobs:
       runs-on: ubuntu-latest
       needs: [linux-release, linux-debug, macos-release, macos-debug, windows-debug, windows-release]
       steps:
-        - name: Download komodo-linux.zip
+
+        - name: Download linux artifact release
           uses: actions/download-artifact@v1
           with:
-            name: komodo-linux
-        - name: Download komodo-osx.zip
+            name: AtomicDEX-Pro-Installer-linux-release
+
+        - name: Download linux artifact debug
           uses: actions/download-artifact@v1
           with:
-            name: komodo-osx
-        - name: Download komodo-win.zip
+            name: AtomicDEX-Pro-Installer-linux-debug
+
+        - name: Download osx artifact release
           uses: actions/download-artifact@v1
           with:
-            name: komodo-win
+            name: dexpro-mac-release.dmg
+
+        - name: Download osx artifact debug
+          uses: actions/download-artifact@v1
+          with:
+            name: dexpro-mac-debug.dmg
+
+        - name: Download win artifact release
+          uses: actions/download-artifact@v1
+          with:
+            name: dexpro-win-release
+
+        - name: Download win artifact debug
+          uses: actions/download-artifact@v1
+          with:
+            name: dexpro-win-debug
 
         - name: Extract branch name
           shell: bash
@@ -556,9 +573,20 @@ jobs:
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
-            upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-            asset_path: komodo-linux/komodo-linux.zip
-            asset_name: komodo_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_linux.zip
+            upload_url: ${{ steps.create_release.outputs.upload_url }}
+            asset_path: AtomicDEX-Pro-Installer-linux-release/AtomicDEX-Pro-Installer
+            asset_name: AtomicDex-Pro_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_linux_rel_install.zip
+            asset_content_type: application/zip
+
+        - name: Upload Linux Debug Asset
+          id: upload-linux-debug-asset
+          uses: actions/upload-release-asset@latest
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            upload_url: ${{ steps.create_release.outputs.upload_url }}
+            asset_path: AtomicDEX-Pro-Installer-linux-debug/AtomicDEX-Pro-Installer
+            asset_name: AtomicDex-Pro_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_linux_dbg_install.zip
             asset_content_type: application/zip
 
         - name: Upload OSX Release Asset
@@ -567,9 +595,20 @@ jobs:
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
-            upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-            asset_path: komodo-osx/komodo-osx.zip
-            asset_name: komodo_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_osx.zip
+            upload_url: ${{ steps.create_release.outputs.upload_url }}
+            asset_path: dexpro-mac-release.dmg/atomicDEX-Pro.dmg
+            asset_name: komodo_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_osx_rel_dmg.zip
+            asset_content_type: application/zip
+
+        - name: Upload OSX Debug Asset
+          id: upload-osx-debug-asset
+          uses: actions/upload-release-asset@latest
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            upload_url: ${{ steps.create_release.outputs.upload_url }}
+            asset_path: dexpro-mac-debug.dmg/atomicDEX-Pro.dmg
+            asset_name: komodo_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_osx_dbg_dmg.zip
             asset_content_type: application/zip
 
         - name: Upload Windows Release Asset
@@ -578,7 +617,18 @@ jobs:
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
-            upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-            asset_path: komodo-win/komodo-win.zip
-            asset_name: komodo_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_win.zip
+            upload_url: ${{ steps.create_release.outputs.upload_url }}
+            asset_path: dexpro-win-release/bundle.zip
+            asset_name: komodo_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_win_rel.zip
+            asset_content_type: application/zip
+
+        - name: Upload Windows Debug Asset
+          id: upload-windows-debug-asset
+          uses: actions/upload-release-asset@latest
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            upload_url: ${{ steps.create_release.outputs.upload_url }}
+            asset_path: dexpro-win-debug/bundle.zip
+            asset_name: komodo_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_win_debug.zip
             asset_content_type: application/zip
