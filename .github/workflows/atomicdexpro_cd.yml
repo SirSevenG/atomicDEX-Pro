@@ -10,221 +10,220 @@ jobs:
 
   linux-release:
     name: Linux Build/Release
-      runs-on: ubuntu-18.04
+    runs-on: ubuntu-18.04
 
-      steps:
-        - uses: actions/checkout@v2
+    steps:
+      - uses: actions/checkout@v2
 
-        - name: Install QT (Linux/Release)
-          uses: jurplel/install-qt-action@v2
-          with:
-            version: '5.14.1'
-            host: 'linux'
-            target: 'desktop'
-            dir: '${{ github.workspace }}'
-            modules: 'qtcharts qtwidgets debug_info'
+      - name: Install QT (Linux/Release)
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: '5.14.1'
+          host: 'linux'
+          target: 'desktop'
+          dir: '${{ github.workspace }}'
+          modules: 'qtcharts qtwidgets debug_info'
 
-        - name: Setup Nim (Linux/Release)
-          uses: jiro4989/setup-nim-action@v1.0.2
-          with:
-            nim-version: '1.2.0'
+      - name: Setup Nim (Linux/Release)
+        uses: jiro4989/setup-nim-action@v1.0.2
+        with:
+          nim-version: '1.2.0'
 
-        - name: Install deps (Linux/Release)
-          env:
-            DEBIAN_FRONTEND: noninteractive
-          run: |
-            sudo apt-get update  # prevents repo404 errors on apt-remove below
-            sudo apt-get remove php5.6-fpm php7.0-fpm php7.1-fpm php7.2-fpm php7.3-fpm php7.3-common php7.4-fpm msodbcsql17
-            sudo apt-get update
-            sudo ACCEPT_EULA=Y apt-get upgrade -y
+      - name: Install deps (Linux/Release)
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo apt-get update  # prevents repo404 errors on apt-remove below
+          sudo apt-get remove php5.6-fpm php7.0-fpm php7.1-fpm php7.2-fpm php7.3-fpm php7.3-common php7.4-fpm msodbcsql17
+          sudo apt-get update
+          sudo ACCEPT_EULA=Y apt-get upgrade -y
+           # base deps
+          sudo apt-get install build-essential \
+                               libgl1-mesa-dev \
+                               ninja-build \
+                               curl \
+                               wget \
+                               software-properties-common \
+                               lsb-release \
+                               libpulse-dev \
+                               libtool \
+                               autoconf \
+                               unzip \
+                               libssl-dev \
+                               git -y
+          # get right cmake version
+          wget https://github.com/Kitware/CMake/releases/download/v3.17.1/cmake-3.17.1.tar.gz -O cmake.tar.gz
+          tar xvzf cmake.tar.gz
+          cd cmake-3.17.1
+          ./bootstrap
+          sudo make install
 
-            # base deps
-            sudo apt-get install build-essential \
-                                 libgl1-mesa-dev \
-                                 ninja-build \
-                                 curl \
-                                 wget \
-                                 software-properties-common \
-                                 lsb-release \
-                                 libpulse-dev \
-                                 libtool \
-                                 autoconf \
-                                 unzip \
-                                 libssl-dev \
-                                 git -y
-            # get right cmake version
-            wget https://github.com/Kitware/CMake/releases/download/v3.17.1/cmake-3.17.1.tar.gz -O cmake.tar.gz
-            tar xvzf cmake.tar.gz
-            cd cmake-3.17.1
-            ./bootstrap
-            sudo make install
+          # get llvm
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 9
 
-            # get llvm
-            wget https://apt.llvm.org/llvm.sh
-            chmod +x llvm.sh
-            sudo ./llvm.sh 9
+          # get libwally
+          git clone https://github.com/KomodoPlatform/libwally-core.git
+          cd libwally-core
+          ./tools/autogen.sh
+          ./configure --disable-shared
+          sudo make -j2 install
 
-            # get libwally
-            git clone https://github.com/KomodoPlatform/libwally-core.git
-            cd libwally-core
-            ./tools/autogen.sh
-            ./configure --disable-shared
-            sudo make -j2 install
+          # set clang version
+          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-9 100
+          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-9 100
 
-            # set clang version
-            sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-9 100
-            sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-9 100
+          # cleanup
+          sudo apt-get clean && \
+          sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+          git clone https://github.com/KomodoPlatform/vcpkg vcpkg-repo
+          cd vcpkg-repo
+          ./bootstrap-vcpkg.sh
+          sudo ./vcpkg integrate install
+          ./vcpkg install doctest
+          ./vcpkg install pthread
+          rm -rf ./downloads
+          rm -rf ./buildtrees
 
-            # cleanup
-            sudo apt-get clean && \
-            sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-            git clone https://github.com/KomodoPlatform/vcpkg vcpkg-repo
-            cd vcpkg-repo
-            ./bootstrap-vcpkg.sh
-            sudo ./vcpkg integrate install
-            ./vcpkg install doctest
-            ./vcpkg install pthread
-            rm -rf ./downloads
-            rm -rf ./buildtrees
+      - name: Build (Linux/Release)
+        run: |
+          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.14.1/gcc_64/lib/cmake
+          export QT_ROOT=${{ github.workspace }}/Qt/5.14.1
+          cd ci_tools_atomic_dex
+          export PATH=$HOME/.nimble/bin:$PATH
+          nimble build -y
+          ./ci_tools_atomic_dex build release
+          rm -rf ./vcpkg-repo/downloads
+          rm -rf ./vcpkg-repo/buildtrees
+          ls build-Release/bin/AntaraAtomicDexAppDir/usr/bin/atomic_qt
 
-        - name: Build (Linux/Release)
-          run: |
-            export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.14.1/gcc_64/lib/cmake
-            export QT_ROOT=${{ github.workspace }}/Qt/5.14.1
-            cd ci_tools_atomic_dex
-            export PATH=$HOME/.nimble/bin:$PATH
-            nimble build -y
-            ./ci_tools_atomic_dex build release
-            rm -rf ./vcpkg-repo/downloads
-            rm -rf ./vcpkg-repo/buildtrees
-            ls build-Release/bin/AntaraAtomicDexAppDir/usr/bin/atomic_qt
+      - name: Pack Installer (Linux/Release)
+        run: |
+          sudo apt-get update
+          sudo apt-get install libxrender-dev \
+                               libxkbcommon-dev \
+                               fontconfig-config -y
+          python3 -m aqt tool linux tools_ifw 3.2.2 qt.tools.ifw.32
+          export QT_IFW_PATH=$PWD/Tools/QtInstallerFramework/3.2/
+          cd ci_tools_atomic_dex
+          ./create_installer_linux.sh Release
+          ls ./installer/AtomicDEX-Pro-Installer
 
-        - name: Pack Installer (Linux/Release)
-          run: |
-            sudo apt-get update
-            sudo apt-get install libxrender-dev \
-                                 libxkbcommon-dev \
-                                 fontconfig-config -y
-            python3 -m aqt tool linux tools_ifw 3.2.2 qt.tools.ifw.32
-            export QT_IFW_PATH=$PWD/Tools/QtInstallerFramework/3.2/
-            cd ci_tools_atomic_dex
-            ./create_installer_linux.sh Release
-            ls ./installer/AtomicDEX-Pro-Installer
-
-        - name: Upload artifacts (Linux)
-          uses: actions/upload-artifact@v1
-          with:
-            name: AtomicDEX-Pro-Installer-linux-release
-            path: ./ci_tools_atomic_dex/installer/AtomicDEX-Pro-Installer
+      - name: Upload artifacts (Linux)
+        uses: actions/upload-artifact@v1
+        with:
+          name: AtomicDEX-Pro-Installer-linux-release
+          path: ./ci_tools_atomic_dex/installer/AtomicDEX-Pro-Installer
 
   linux-debug:
     name: Linux Build/Debug
-      runs-on: ubuntu-18.04
+    runs-on: ubuntu-18.04
 
-      steps:
-        - uses: actions/checkout@v2
+    steps:
+      - uses: actions/checkout@v2
 
-        - name: Install QT (Linux/Debug)
-          uses: jurplel/install-qt-action@v2
-          with:
-            version: '5.14.1'
-            host: 'linux'
-            target: 'desktop'
-            dir: '${{ github.workspace }}'
-            modules: 'qtcharts qtwidgets debug_info'
+      - name: Install QT (Linux/Debug)
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: '5.14.1'
+          host: 'linux'
+          target: 'desktop'
+          dir: '${{ github.workspace }}'
+          modules: 'qtcharts qtwidgets debug_info'
 
-        - name: Setup Nim (Linux/Debug)
-          uses: jiro4989/setup-nim-action@v1.0.2
-          with:
-            nim-version: '1.2.0'
+      - name: Setup Nim (Linux/Debug)
+        uses: jiro4989/setup-nim-action@v1.0.2
+        with:
+          nim-version: '1.2.0'
 
-        - name: Install deps (Linux/Debug)
-          env:
-            DEBIAN_FRONTEND: noninteractive
-          run: |
-            sudo apt-get update  # prevents repo404 errors on apt-remove below
-            sudo apt-get remove php5.6-fpm php7.0-fpm php7.1-fpm php7.2-fpm php7.3-fpm php7.3-common php7.4-fpm msodbcsql17
-            sudo apt-get update
-            sudo ACCEPT_EULA=Y apt-get upgrade -y
+      - name: Install deps (Linux/Debug)
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo apt-get update  # prevents repo404 errors on apt-remove below
+          sudo apt-get remove php5.6-fpm php7.0-fpm php7.1-fpm php7.2-fpm php7.3-fpm php7.3-common php7.4-fpm msodbcsql17
+          sudo apt-get update
+          sudo ACCEPT_EULA=Y apt-get upgrade -y
 
-            # base deps
-            sudo apt-get install build-essential \
-                                 libgl1-mesa-dev \
-                                 ninja-build \
-                                 curl \
-                                 wget \
-                                 software-properties-common \
-                                 lsb-release \
-                                 libpulse-dev \
-                                 libtool \
-                                 autoconf \
-                                 unzip \
-                                 libssl-dev \
-                                 git -y
-            # get right cmake version
-            wget https://github.com/Kitware/CMake/releases/download/v3.17.1/cmake-3.17.1.tar.gz -O cmake.tar.gz
-            tar xvzf cmake.tar.gz
-            cd cmake-3.17.1
-            ./bootstrap
-            sudo make install
+          # base deps
+          sudo apt-get install build-essential \
+                               libgl1-mesa-dev \
+                               ninja-build \
+                               curl \
+                               wget \
+                               software-properties-common \
+                               lsb-release \
+                               libpulse-dev \
+                               libtool \
+                               autoconf \
+                               unzip \
+                               libssl-dev \
+                               git -y
+          # get right cmake version
+          wget https://github.com/Kitware/CMake/releases/download/v3.17.1/cmake-3.17.1.tar.gz -O cmake.tar.gz
+          tar xvzf cmake.tar.gz
+          cd cmake-3.17.1
+          ./bootstrap
+          sudo make install
 
-            # get llvm
-            wget https://apt.llvm.org/llvm.sh
-            chmod +x llvm.sh
-            sudo ./llvm.sh 9
+          # get llvm
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 9
 
-            # get libwally
-            git clone https://github.com/KomodoPlatform/libwally-core.git
-            cd libwally-core
-            ./tools/autogen.sh
-            ./configure --disable-shared
-            sudo make -j2 install
+           # get libwally
+           git clone https://github.com/KomodoPlatform/libwally-core.git
+           cd libwally-core
+           ./tools/autogen.sh
+           ./configure --disable-shared
+           sudo make -j2 install
 
-            # set clang version
-            sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-9 100
-            sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-9 100
+           # set clang version
+           sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-9 100
+           sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-9 100
 
-            # cleanup
-            sudo apt-get clean && \
-            sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-            git clone https://github.com/KomodoPlatform/vcpkg vcpkg-repo
-            cd vcpkg-repo
-            ./bootstrap-vcpkg.sh
-            sudo ./vcpkg integrate install
-            ./vcpkg install doctest
-            ./vcpkg install pthread
-            rm -rf ./downloads
-            rm -rf ./buildtrees
+           # cleanup
+           sudo apt-get clean && \
+           sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+           git clone https://github.com/KomodoPlatform/vcpkg vcpkg-repo
+           cd vcpkg-repo
+           ./bootstrap-vcpkg.sh
+           sudo ./vcpkg integrate install
+           ./vcpkg install doctest
+           ./vcpkg install pthread
+           rm -rf ./downloads
+           rm -rf ./buildtrees
 
-        - name: Build (Linux/Debug)
-          run: |
-            export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.14.1/gcc_64/lib/cmake
-            export QT_ROOT=${{ github.workspace }}/Qt/5.14.1
-            cd ci_tools_atomic_dex
-            export PATH=$HOME/.nimble/bin:$PATH
-            nimble build -y
-            ./ci_tools_atomic_dex build debug
-            rm -rf ./vcpkg-repo/downloads
-            rm -rf ./vcpkg-repo/buildtrees
-            ls build-Debug/bin/AntaraAtomicDexAppDir/usr/bin/atomic_qt
+      - name: Build (Linux/Debug)
+        run: |
+          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.14.1/gcc_64/lib/cmake
+          export QT_ROOT=${{ github.workspace }}/Qt/5.14.1
+          cd ci_tools_atomic_dex
+          export PATH=$HOME/.nimble/bin:$PATH
+          nimble build -y
+          ./ci_tools_atomic_dex build debug
+          rm -rf ./vcpkg-repo/downloads
+          rm -rf ./vcpkg-repo/buildtrees
+          ls build-Debug/bin/AntaraAtomicDexAppDir/usr/bin/atomic_qt
 
-        - name: Pack Installer (Linux/Debug)
-          run: |
-            sudo apt-get update
-            sudo apt-get install libxrender-dev \
-                                 libxkbcommon-dev \
-                                 fontconfig-config -y
-            python3 -m aqt tool linux tools_ifw 3.2.2 qt.tools.ifw.32
-            export QT_IFW_PATH=$PWD/Tools/QtInstallerFramework/3.2/
-            cd ci_tools_atomic_dex
-            ./create_installer_linux.sh Debug
-            ls ./installer/AtomicDEX-Pro-Installer
+      - name: Pack Installer (Linux/Debug)
+        run: |
+          sudo apt-get update
+          sudo apt-get install libxrender-dev \
+                               libxkbcommon-dev \
+                               fontconfig-config -y
+          python3 -m aqt tool linux tools_ifw 3.2.2 qt.tools.ifw.32
+          export QT_IFW_PATH=$PWD/Tools/QtInstallerFramework/3.2/
+          cd ci_tools_atomic_dex
+          ./create_installer_linux.sh Debug
+          ls ./installer/AtomicDEX-Pro-Installer
 
-        - name: Upload artifacts (Linux/Debug)
-          uses: actions/upload-artifact@v1
-          with:
-            name: AtomicDEX-Pro-Installer-linux-debug
-            path: ./ci_tools_atomic_dex/installer/AtomicDEX-Pro-Installer
+      - name: Upload artifacts (Linux/Debug)
+        uses: actions/upload-artifact@v1
+        with:
+          name: AtomicDEX-Pro-Installer-linux-debug
+          path: ./ci_tools_atomic_dex/installer/AtomicDEX-Pro-Installer
 
   macos-release:
     name: MacOS Build/Release
