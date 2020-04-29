@@ -576,7 +576,7 @@ jobs:
           with:
             upload_url: ${{ steps.create_release.outputs.upload_url }}
             asset_path: AtomicDEX-Pro-Installer-linux-release/AtomicDEX-Pro-Installer
-            asset_name: AtomicDex-Pro_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_linux_rel_install.zip
+            asset_name: AtomicDex-Pro_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_linux_rel_install
             asset_content_type: application/zip
 
         - name: Upload Linux Debug Asset
@@ -587,7 +587,7 @@ jobs:
           with:
             upload_url: ${{ steps.create_release.outputs.upload_url }}
             asset_path: AtomicDEX-Pro-Installer-linux-debug/AtomicDEX-Pro-Installer
-            asset_name: AtomicDex-Pro_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_linux_dbg_install.zip
+            asset_name: AtomicDex-Pro_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_linux_dbg_install
             asset_content_type: application/zip
 
         - name: Upload OSX Release Asset
@@ -598,7 +598,7 @@ jobs:
           with:
             upload_url: ${{ steps.create_release.outputs.upload_url }}
             asset_path: dexpro-mac-release.dmg/atomicDEX-Pro.dmg
-            asset_name: komodo_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_osx_rel_dmg.zip
+            asset_name: AtomicDEX-Pro_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_osx_rel_dmg.zip
             asset_content_type: application/zip
 
         - name: Upload OSX Debug Asset
@@ -609,7 +609,7 @@ jobs:
           with:
             upload_url: ${{ steps.create_release.outputs.upload_url }}
             asset_path: dexpro-mac-debug.dmg/atomicDEX-Pro.dmg
-            asset_name: komodo_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_osx_dbg_dmg.zip
+            asset_name: AtomicDEX-Pro_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_osx_dbg_dmg.zip
             asset_content_type: application/zip
 
         - name: Upload Windows Release Asset
@@ -620,7 +620,7 @@ jobs:
           with:
             upload_url: ${{ steps.create_release.outputs.upload_url }}
             asset_path: dexpro-win-release/bundle.zip
-            asset_name: komodo_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_win_rel.zip
+            asset_name: AtomicDEX-Pro_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_win_rel.zip
             asset_content_type: application/zip
 
         - name: Upload Windows Debug Asset
@@ -631,5 +631,5 @@ jobs:
           with:
             upload_url: ${{ steps.create_release.outputs.upload_url }}
             asset_path: dexpro-win-debug/bundle.zip
-            asset_name: komodo_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_win_debug.zip
+            asset_name: AtomicDEX-Pro_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_win_debug.zip
             asset_content_type: application/zip
