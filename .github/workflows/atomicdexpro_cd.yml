@@ -102,6 +102,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install libxrender-dev \
+                               zip \
                                libxkbcommon-dev \
                                libxkbcommon-x11-0 \
                                fontconfig-config -y
@@ -110,12 +111,13 @@ jobs:
           cd ci_tools_atomic_dex
           ./create_installer_linux.sh Release
           ls ./installer/AtomicDEX-Pro-Installer
+          zip AtomicDEX-Pro-Installer.zip ./installer/AtomicDEX-Pro-Installer
 
       - name: Upload artifacts (Linux)
         uses: actions/upload-artifact@v1
         with:
           name: AtomicDEX-Pro-Installer-linux-release
-          path: ./ci_tools_atomic_dex/installer/AtomicDEX-Pro-Installer
+          path: ./ci_tools_atomic_dex/AtomicDEX-Pro-Installer.zip
 
   linux-debug:
     name: Linux Build/Debug
@@ -214,18 +216,20 @@ jobs:
           sudo apt-get install libxrender-dev \
                                libxkbcommon-dev \
                                libxkbcommon-x11-0 \
+                               zip \
                                fontconfig-config -y
           python3 -m aqt tool linux tools_ifw 3.2.2 qt.tools.ifw.32
           export QT_IFW_PATH=$PWD/Tools/QtInstallerFramework/3.2/
           cd ci_tools_atomic_dex
           ./create_installer_linux.sh Debug
           ls ./installer/AtomicDEX-Pro-Installer
+          zip AtomicDEX-Pro-Installer.zip ./installer/AtomicDEX-Pro-Installer
 
       - name: Upload artifacts (Linux/Debug)
         uses: actions/upload-artifact@v1
         with:
           name: AtomicDEX-Pro-Installer-linux-debug
-          path: ./ci_tools_atomic_dex/installer/AtomicDEX-Pro-Installer
+          path: ./ci_tools_atomic_dex/AtomicDEX-Pro-Installer.zip
 
   macos-release:
     name: MacOS Build/Release
@@ -575,8 +579,9 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
             upload_url: ${{ steps.create_release.outputs.upload_url }}
-            asset_path: AtomicDEX-Pro-Installer-linux-release/AtomicDEX-Pro-Installer
-            asset_name: AtomicDex-Pro_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_linux_rel_install
+            asset_path: AtomicDEX-Pro-Installer-linux-release/AtomicDEX-Pro-Installer.zip
+            asset_name: AtomicDex-Pro_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_linux_rel_install.zip
+            asset_content_type: application/zip
 
         - name: Upload Linux Debug Asset
           id: upload-linux-debug-asset
@@ -585,8 +590,9 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
             upload_url: ${{ steps.create_release.outputs.upload_url }}
-            asset_path: AtomicDEX-Pro-Installer-linux-debug/AtomicDEX-Pro-Installer
-            asset_name: AtomicDex-Pro_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_linux_dbg_install
+            asset_path: AtomicDEX-Pro-Installer-linux-debug/AtomicDEX-Pro-Installer.zip
+            asset_name: AtomicDex-Pro_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_linux_dbg_install.zip
+            asset_content_type: application/zip
 
         - name: Upload OSX Release Asset
           id: upload-osx-release-asset
@@ -596,7 +602,7 @@ jobs:
           with:
             upload_url: ${{ steps.create_release.outputs.upload_url }}
             asset_path: dexpro-mac-release.dmg/atomicDEX-Pro.dmg
-            asset_name: AtomicDEX-Pro_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_osx_rel_dmg.dmg
+            asset_name: AtomicDEX-Pro_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_osx_rel.dmg
             asset_content_type: application/x-apple-diskimage
 
         - name: Upload OSX Debug Asset
@@ -607,7 +613,7 @@ jobs:
           with:
             upload_url: ${{ steps.create_release.outputs.upload_url }}
             asset_path: dexpro-mac-debug.dmg/atomicDEX-Pro.dmg
-            asset_name: AtomicDEX-Pro_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_osx_dbg_dmg.dmg
+            asset_name: AtomicDEX-Pro_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_osx_dbg.dmg
             asset_content_type: application/x-apple-diskimage
 
         - name: Upload Windows Release Asset
