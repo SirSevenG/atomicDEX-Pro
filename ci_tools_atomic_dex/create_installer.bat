@@ -13,7 +13,7 @@ REM Delete old data
 @RD /S /Q "%installer_data%"
 
 REM Copy deps from vcpkg-repo
-for /R "%vcpkg_deps_folder%" %%f in (*.dll) do copy %%f "%build_folder%"
+REM for /R "%vcpkg_deps_folder%" %%f in (*.dll) do copy %%f "%build_folder%"
 
 REM Copy new data
 echo D | xcopy "%build_folder%" "%installer_data%" /E
