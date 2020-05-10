@@ -210,6 +210,7 @@ jobs:
           scoop install ninja --global
           scoop install cmake --global
           scoop install git --global
+          scoop install 7zip  --global
 
           # clear scoop cache
           scoop cache rm 7zip
@@ -230,11 +231,12 @@ jobs:
         shell: powershell
         if: steps.cache-vcpkg.outputs.cache-hit != 'true'
         run: |
+          Set-ExecutionPolicy RemoteSigned -scope CurrentUser
           cd ci_tools_atomic_dex
           $file = 'src\generate.nim'
           $regex = '(?<=g_vcpkg_cmake_script_path & ")[^"]*'
           (Get-Content $file) -replace $regex, ' -DVCPKG_TARGET_TRIPLET=x64-windows ' | Set-Content $file
-          nimble.exe build -y
+          nimble build -y
 
           & cmd /c 'git clone https://github.com/KomodoPlatform/vcpkg vcpkg-repo 2>&1'
           cd vcpkg-repo
