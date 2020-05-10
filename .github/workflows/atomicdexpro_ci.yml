@@ -197,14 +197,34 @@ jobs:
           dir: 'C:\'
           modules: 'qtcharts qtwidgets debug_info'
 
-      - name: Cache Deps (Win)
+      - name: Install Scoop Deps (Win)
+        uses: powershell
+        run: |
+          Set-ExecutionPolicy RemoteSigned -scope CurrentUser
+          Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+
+          scoop install nim --global
+          scoop install llvm --global
+          scoop install ninja --global
+          scoop install cmake --global
+          scoop install git --global
+
+          # clear scoop cache
+          scoop cache rm 7zip
+          scoop cache rm git
+          scoop cache rm cmake
+          scoop cache rm ninja
+          scoop cache rm llvm
+          scoop cache rm nim
+
+      - name: Cache Vcpkg Deps (Win)
         id: cache-vcpkg
         uses: actions/cache@v1
         with:
           path: ci_tools_atomic_dex/vcpkg-repo
           key: ${{ runner.os }}-vcpkg
 
-      - name: Build Deps (Win)
+      - name: Build Vcpkg Deps (Win)
         shell: powershell
         if: steps.cache-vcpkg.outputs.cache-hit != 'true'
         run: |
@@ -242,22 +262,6 @@ jobs:
         shell: powershell
         run: |
           $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\5.14.1\msvc2017_64"
-          Set-ExecutionPolicy RemoteSigned -scope CurrentUser
-          Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
-
-          scoop install nim --global
-          scoop install llvm --global
-          scoop install ninja --global
-          scoop install cmake --global
-          scoop install git --global
-
-          # clear scoop cache
-          scoop cache rm 7zip
-          scoop cache rm git
-          scoop cache rm cmake
-          scoop cache rm ninja
-          scoop cache rm llvm
-          scoop cache rm nim
 
           cmd /c '.\ci_tools_atomic_dex.exe build debug 2>&1'
           cmd /c '.\ci_tools_atomic_dex.exe bundle debug 2>&1'
