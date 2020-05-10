@@ -95,27 +95,29 @@ jobs:
           export PATH=$HOME/.nimble/bin:$PATH
           nimble build -y
           ./ci_tools_atomic_dex build debug
+          ./ci_tools_atomic_dex bundle debug
           rm -rf ./vcpkg-repo/downloads
           rm -rf ./vcpkg-repo/buildtrees
           ls build-Debug/bin/AntaraAtomicDexAppDir/usr/bin/atomic_qt
+          ls .
 
-      - name: Pack Installer (Linux)
-        run: |
-          sudo apt-get update
-          sudo apt-get install libxrender-dev \
-                               libxkbcommon-dev \
-                               libxkbcommon-x11-0 \
-                               fontconfig-config -y
-          python3 -m aqt tool linux tools_ifw 3.2.2 qt.tools.ifw.32
-          export QT_IFW_PATH=$PWD/Tools/QtInstallerFramework/3.2/
-          cd ci_tools_atomic_dex
-          ./create_installer_linux.sh Debug
-          ls ./installer/AtomicDEX-Pro-Installer
+#      - name: Pack Installer (Linux)
+#        run: |
+#          sudo apt-get update
+#          sudo apt-get install libxrender-dev \
+#                               libxkbcommon-dev \
+#                               libxkbcommon-x11-0 \
+#                               fontconfig-config -y
+#          python3 -m aqt tool linux tools_ifw 3.2.2 qt.tools.ifw.32
+#          export QT_IFW_PATH=$PWD/Tools/QtInstallerFramework/3.2/
+#          cd ci_tools_atomic_dex
+#          ./create_installer_linux.sh Debug
+#          ls ./installer/AtomicDEX-Pro-Installer
 
       - name: Upload artifacts (Linux)
         uses: actions/upload-artifact@v1
         with:
-          name: AtomicDEX-Pro-Installer-linux
+          name: AtomicDEX-Pro-bundle-linux
           path: ./ci_tools_atomic_dex/installer/AtomicDEX-Pro-Installer
 
   macos-build:
