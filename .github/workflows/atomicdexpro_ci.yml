@@ -204,6 +204,7 @@ jobs:
         run: |
           Set-ExecutionPolicy RemoteSigned -scope CurrentUser
           Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+          cd ci_tools_atomic_dex
 
           scoop install nim --global
           scoop install llvm --global
@@ -219,6 +220,11 @@ jobs:
           scoop cache rm ninja
           scoop cache rm llvm
           scoop cache rm nim
+          
+          $file = 'src\generate.nim'
+          $regex = '(?<=g_vcpkg_cmake_script_path & ")[^"]*'
+          (Get-Content $file) -replace $regex, ' -DVCPKG_TARGET_TRIPLET=x64-windows ' | Set-Content $file
+          nimble build -y
 
       - name: Cache Vcpkg Deps (Win)
         id: cache-vcpkg
@@ -231,13 +237,7 @@ jobs:
         shell: powershell
         if: steps.cache-vcpkg.outputs.cache-hit != 'true'
         run: |
-          Set-ExecutionPolicy RemoteSigned -scope CurrentUser
           cd ci_tools_atomic_dex
-          $file = 'src\generate.nim'
-          $regex = '(?<=g_vcpkg_cmake_script_path & ")[^"]*'
-          (Get-Content $file) -replace $regex, ' -DVCPKG_TARGET_TRIPLET=x64-windows ' | Set-Content $file
-          nimble build -y
-
           & cmd /c 'git clone https://github.com/KomodoPlatform/vcpkg vcpkg-repo 2>&1'
           cd vcpkg-repo
           .\bootstrap-vcpkg.bat
