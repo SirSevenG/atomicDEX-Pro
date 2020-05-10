@@ -109,7 +109,9 @@ jobs:
           rm -rf ./vcpkg-repo/downloads
           rm -rf ./vcpkg-repo/buildtrees
           ls build-Debug/bin/AntaraAtomicDexAppDir/usr/bin/atomic_qt
-          zip linux-bundle-debug bundle-Debug
+          ls .
+          ls bundle-Debug
+          zip linux-bundle-debug.zip bundle-Debug/*
 
       - name: Upload artifacts (Linux)
         uses: actions/upload-artifact@v1
