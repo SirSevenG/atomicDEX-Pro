@@ -94,12 +94,12 @@ jobs:
           cd ci_tools_atomic_dex
           export PATH=$HOME/.nimble/bin:$PATH
           nimble build -y
-          ./ci_tools_atomic_dex build debug
-          ./ci_tools_atomic_dex bundle debug
+          ./ci_tools_atomic_dex build release
+          ./ci_tools_atomic_dex bundle release
           rm -rf ./vcpkg-repo/downloads
           rm -rf ./vcpkg-repo/buildtrees
           ls build-Debug/bin/AntaraAtomicDexAppDir/usr/bin/atomic_qt
-          zip linux-bundle-debug bundle-Debug
+          zip linux-bundle-debug bundle-Release
 
 #      - name: Pack Installer (Linux)
 #        run: |
