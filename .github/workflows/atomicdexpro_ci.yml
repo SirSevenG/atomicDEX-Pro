@@ -99,7 +99,7 @@ jobs:
           rm -rf ./vcpkg-repo/downloads
           rm -rf ./vcpkg-repo/buildtrees
           ls build-Debug/bin/AntaraAtomicDexAppDir/usr/bin/atomic_qt
-          ls .
+          zip linux-bundle-debug bundle-Debug
 
 #      - name: Pack Installer (Linux)
 #        run: |
@@ -118,7 +118,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: AtomicDEX-Pro-bundle-linux
-          path: ./ci_tools_atomic_dex/installer/AtomicDEX-Pro-Installer
+          path: ./ci_tools_atomic_dex/linux-bundle-debug.zip
 
   macos-build:
     name: MacOS Build
