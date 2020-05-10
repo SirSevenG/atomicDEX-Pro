@@ -104,25 +104,12 @@ jobs:
           cd ci_tools_atomic_dex
           export PATH=$HOME/.nimble/bin:$PATH
           nimble build -y
-          ./ci_tools_atomic_dex build release
-          ./ci_tools_atomic_dex bundle release
+          ./ci_tools_atomic_dex build debug
+          ./ci_tools_atomic_dex bundle debug
           rm -rf ./vcpkg-repo/downloads
           rm -rf ./vcpkg-repo/buildtrees
           ls build-Debug/bin/AntaraAtomicDexAppDir/usr/bin/atomic_qt
-          zip linux-bundle-debug bundle-Release
-
-#      - name: Pack Installer (Linux)
-#        run: |
-#          sudo apt-get update
-#          sudo apt-get install libxrender-dev \
-#                               libxkbcommon-dev \
-#                               libxkbcommon-x11-0 \
-#                               fontconfig-config -y
-#          python3 -m aqt tool linux tools_ifw 3.2.2 qt.tools.ifw.32
-#          export QT_IFW_PATH=$PWD/Tools/QtInstallerFramework/3.2/
-#          cd ci_tools_atomic_dex
-#          ./create_installer_linux.sh Debug
-#          ls ./installer/AtomicDEX-Pro-Installer
+          zip linux-bundle-debug bundle-Debug
 
       - name: Upload artifacts (Linux)
         uses: actions/upload-artifact@v1
