@@ -87,6 +87,16 @@ jobs:
           rm -rf ./downloads
           rm -rf ./buildtrees
 
+      - name: Install folly (Linux)
+        run: |
+          cd ci_tools_atomic_dex
+          git clone https://github.com/KomodoPlatform/vcpkg vcpkg-repo
+          cd vcpkg-repo
+          ./bootstrap-vcpkg.sh
+          export CC=gcc-8
+          export CXX=g++-8
+          vcpkg install folly
+
       - name: Build (Linux)
         run: |
           export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.14.1/gcc_64/lib/cmake
