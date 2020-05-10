@@ -198,7 +198,7 @@ jobs:
           modules: 'qtcharts qtwidgets debug_info'
 
       - name: Install Scoop Deps (Win)
-        uses: powershell
+        shell: powershell
         run: |
           Set-ExecutionPolicy RemoteSigned -scope CurrentUser
           Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
