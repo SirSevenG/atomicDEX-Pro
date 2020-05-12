@@ -265,8 +265,8 @@ jobs:
       - name: Build (Win)
         shell: powershell
         run: |
+          cd ci_tools_atomic_dex
           $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\5.14.1\msvc2017_64"
-
           cmd /c '.\ci_tools_atomic_dex.exe build debug 2>&1'
           cmd /c '.\ci_tools_atomic_dex.exe bundle debug 2>&1'
           ls bundle-Debug/bundle.zip
