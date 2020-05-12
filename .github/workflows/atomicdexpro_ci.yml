@@ -117,18 +117,20 @@ jobs:
           rm -rf ./vcpkg-repo/downloads
           rm -rf ./vcpkg-repo/buildtrees
           ls build-Debug/bin/AntaraAtomicDexAppDir/usr/bin/atomic_qt
-          ls .
-          ls build-Debug
-          ls .
-          ls build-Debug/*
-          ls bundle-Debug
+          zip --junk-paths linux-build-debug.zip build-Debug/*
           zip --junk-paths linux-bundle-debug.zip bundle-Debug/*
 
-      - name: Upload artifacts (Linux)
+      - name: Upload artifacts 1(Linux)
         uses: actions/upload-artifact@v1
         with:
           name: AtomicDEX-Pro-bundle-linux
           path: ./ci_tools_atomic_dex/linux-bundle-debug.zip
+
+      - name: Upload artifacts 2(Linux)
+        uses: actions/upload-artifact@v1
+        with:
+          name: AtomicDEX-Pro-build-linux
+          path: ./ci_tools_atomic_dex/linux-build-debug.zip
 
   macos-build:
     name: MacOS Build
