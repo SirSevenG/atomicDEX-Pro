@@ -118,6 +118,9 @@ jobs:
           rm -rf ./vcpkg-repo/buildtrees
           ls build-Debug/bin/AntaraAtomicDexAppDir/usr/bin/atomic_qt
           ls .
+          ls build-Debug
+          ls .
+          ls build-Debug/*
           ls bundle-Debug
           zip --junk-paths linux-bundle-debug.zip bundle-Debug/*
 
