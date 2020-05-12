@@ -15,10 +15,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Cache Qt (Linux)
+        id: cache-qt-linux
+        uses: actions/cache@v1
+        with:
+          path: '${{ github.workspace }}/Qt/5.14.2'
+          key: ${{ runner.os }}-qt
+
       - name: Install QT (Linux)
+        if: steps.cache-qt-linux.outputs.cache-hit != 'true'
         uses: jurplel/install-qt-action@v2
         with:
-          version: '5.14.1'
+          version: '5.14.2'
           host: 'linux'
           target: 'desktop'
           dir: '${{ github.workspace }}'
@@ -126,7 +134,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Cache Qt (Mac)
+        id: cache-qt-mac
+        uses: actions/cache@v1
+        with:
+          path: '${{ github.workspace }}/Qt/5.14.2'
+          key: ${{ runner.os }}-qt
+
       - name: Install QT (MacOS)
+        if: steps.cache-qt-mac.outputs.cache-hit != 'true'
         uses: jurplel/install-qt-action@v2
         with:
           version: '5.14.2'
@@ -190,10 +206,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Cache Qt (Win)
+        id: cache-qt-win
+        uses: actions/cache@v1
+        with:
+          path: 'C:\Qt\5.14.2'
+          key: ${{ runner.os }}-qt
+
       - name: Install QT (Win)
+        if: steps.cache-qt-win.outputs.cache-hit != 'true'
         uses: jurplel/install-qt-action@v2
         with:
-          version: '5.14.1'
+          version: '5.14.2'
           host: 'windows'
           target: 'desktop'
           dir: 'C:\'
