@@ -297,7 +297,7 @@ jobs:
           $SHADW = Get-FileHash -Algorithm SHA256 .\debuglibs-win-dexpro.zip | select -exp Hash
           if ($SHADW -ne $SHAORIG) {Throw "Wrong hash: $SHADW =! $SHAORIG"}
           cmd /c '.\ci_tools_atomic_dex.exe build debug 2>&1'
-          7z -e -o'build-Debug\bin\' .\debuglibs-win-dexpro.zip
+          7z e -o'build-Debug\bin\' .\debuglibs-win-dexpro.zip
           cmd /c '.\ci_tools_atomic_dex.exe bundle debug 2>&1'
           ls bundle-Debug/bundle.zip
 
