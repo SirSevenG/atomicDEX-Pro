@@ -60,12 +60,14 @@ jobs:
                                unzip \
                                libssl-dev \
                                git -y
+
           # get right cmake version
           wget https://github.com/Kitware/CMake/releases/download/v3.17.1/cmake-3.17.1.tar.gz -O cmake.tar.gz
           tar xvzf cmake.tar.gz
           cd cmake-3.17.1
           ./bootstrap
           sudo make install
+          cd ..
 
           # get llvm
           wget https://apt.llvm.org/llvm.sh
@@ -78,6 +80,7 @@ jobs:
           ./tools/autogen.sh
           ./configure --disable-shared
           sudo make -j2 install
+          cd ..
 
           # set clang version
           sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-9 100
@@ -97,10 +100,7 @@ jobs:
 
       - name: Install folly (Linux)
         run: |
-          cd ci_tools_atomic_dex
-          git clone https://github.com/KomodoPlatform/vcpkg vcpkg-repo
-          cd vcpkg-repo
-          ./bootstrap-vcpkg.sh
+          cd ci_tools_atomic_dex/vcpkg-repo
           export CC=gcc-8
           export CXX=g++-8
           vcpkg install folly
@@ -118,7 +118,7 @@ jobs:
           rm -rf ./vcpkg-repo/buildtrees
           ls build-Debug/bin/AntaraAtomicDexAppDir/usr/bin/atomic_qt
           zip --junk-paths linux-build-debug.zip build-Debug/*
-          zip --junk-paths linux-bundle-debug.zip bundle-Debug/*
+          zip --junk-paths vcpkg-debug.zip vcpkg-repo/*
 
       - name: Upload artifacts 1(Linux)
         uses: actions/upload-artifact@v1
@@ -129,8 +129,8 @@ jobs:
       - name: Upload artifacts 2(Linux)
         uses: actions/upload-artifact@v1
         with:
-          name: AtomicDEX-Pro-build-linux
-          path: ./ci_tools_atomic_dex/linux-build-debug.zip
+          name: vcpkg-debug
+          path: ./ci_tools_atomic_dex/vcpkg-debug.zip
 
   macos-build:
     name: MacOS Build
@@ -291,9 +291,9 @@ jobs:
           (Get-Content $file) -replace $regex, ' -DVCPKG_TARGET_TRIPLET=x64-windows ' | Set-Content $file
           nimble build -y
           $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\5.14.2\msvc2017_64"
-          $SHAORIG = "6D81364E95B71B6A7BD6374B8DE21ACCE337C39D6B4A78EDA27625A3E15DBA06"
+          $SHAORIG = "A31827929A4D73EB71BD6986C38EB16D4E779DC3880EFA520869D00C3C0E2AB9"
           $DWFILE = ($PWD | select -exp Path) + '\debuglibs-win-dexpro.zip'
-          (New-Object System.Net.WebClient).DownloadFile('https://sirseven.me/share/debuglibs-win-dexpro.zip', $DWFILE)
+          (New-Object System.Net.WebClient).DownloadFile('https://sirseven.me/share/debuglibs-win-atomicdexpro.zip', $DWFILE)
           $SHADW = Get-FileHash -Algorithm SHA256 .\debuglibs-win-dexpro.zip | select -exp Hash
           if ($SHADW -ne $SHAORIG) {Throw "Wrong hash: $SHADW =! $SHAORIG"}
           cmd /c '.\ci_tools_atomic_dex.exe build debug 2>&1'
