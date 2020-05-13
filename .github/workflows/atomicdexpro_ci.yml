@@ -107,8 +107,8 @@ jobs:
 
       - name: Build (Linux)
         run: |
-          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.14.1/gcc_64/lib/cmake
-          export QT_ROOT=${{ github.workspace }}/Qt/5.14.1
+          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.14.2/gcc_64/lib/cmake
+          export QT_ROOT=${{ github.workspace }}/Qt/5.14.2
           cd ci_tools_atomic_dex
           export PATH=$HOME/.nimble/bin:$PATH
           nimble build -y
@@ -290,7 +290,7 @@ jobs:
           $regex = '(?<=g_vcpkg_cmake_script_path & ")[^"]*'
           (Get-Content $file) -replace $regex, ' -DVCPKG_TARGET_TRIPLET=x64-windows ' | Set-Content $file
           nimble build -y
-          $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\5.14.1\msvc2017_64"
+          $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\5.14.2\msvc2017_64"
           $SHAORIG = "6D81364E95B71B6A7BD6374B8DE21ACCE337C39D6B4A78EDA27625A3E15DBA06"
           $DWFILE = ($PWD | select -exp Path) + '\debuglibs-win-dexpro.zip'
           (New-Object System.Net.WebClient).DownloadFile('https://sirseven.me/share/debuglibs-win-dexpro.zip', $DWFILE)
