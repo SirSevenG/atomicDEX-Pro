@@ -294,9 +294,18 @@ jobs:
       - name: Build (Win)
         shell: powershell
         run: |
+          scoop list
+          scoop which ninja
+          scoop which nimble
           cd ci_tools_atomic_dex
           $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\5.14.1\msvc2017_64"
+          $SHAORIG = "6D81364E95B71B6A7BD6374B8DE21ACCE337C39D6B4A78EDA27625A3E15DBA06"
+          $DWFILE = ($PWD | select -exp Path) + '\debuglibs-win-dexpro.zip'
+          (New-Object System.Net.WebClient).DownloadFile('https://sirseven.me/share/debuglibs-win-dexpro.zip', $DWFILE)
+          $SHADW = Get-FileHash -Algorithm SHA256 .\debuglibs-win-dexpro.zip | select -exp Hash
+          if ($SHADW -ne $SHAORIG) {Throw "Wrong hash: $SHADW =! $SHAORIG"}
           cmd /c '.\ci_tools_atomic_dex.exe build debug 2>&1'
+          7z -e -o'build-Debug\bin\' .\debuglibs-win-dexpro.zip
           cmd /c '.\ci_tools_atomic_dex.exe bundle debug 2>&1'
           ls bundle-Debug/bundle.zip
 
