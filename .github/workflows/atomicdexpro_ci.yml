@@ -89,21 +89,29 @@ jobs:
           # cleanup
           sudo apt-get clean && \
           sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+      - name: Cache vcpkg (Linux)
+        id: cache-vcpkg-linux
+          uses: actions/cache@v1
+          with:
+            path: '${{ github.workspace }}/ci_tools_atomic_dex/vcpkg-repo'
+            key: ${{ runner.os }}-vcpkg
+
+      - name: Install folly (Linux)
+        if: steps.cache-vcpkg-linux.outputs.cache-hit != 'true'
+        run: |
+          cd ci_tools_atomic_dex
           git clone https://github.com/KomodoPlatform/vcpkg vcpkg-repo
           cd vcpkg-repo
           ./bootstrap-vcpkg.sh
           sudo ./vcpkg integrate install
           ./vcpkg install doctest
           ./vcpkg install pthread
-          rm -rf ./downloads
-          rm -rf ./buildtrees
-
-      - name: Install folly (Linux)
-        run: |
-          cd ci_tools_atomic_dex/vcpkg-repo
           export CC=gcc-8
           export CXX=g++-8
           vcpkg install folly
+          rm -rf ./downloads
+          rm -rf ./buildtrees
 
       - name: Build (Linux)
         run: |
