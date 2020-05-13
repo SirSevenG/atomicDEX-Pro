@@ -92,10 +92,10 @@ jobs:
 
       - name: Cache vcpkg (Linux)
         id: cache-vcpkg-linux
-          uses: actions/cache@v1
-          with:
-            path: '${{ github.workspace }}/ci_tools_atomic_dex/vcpkg-repo'
-            key: ${{ runner.os }}-vcpkg
+        uses: actions/cache@v1
+        with:
+          path: '${{ github.workspace }}/ci_tools_atomic_dex/vcpkg-repo'
+          key: ${{ runner.os }}-vcpkg
 
       - name: Install folly (Linux)
         if: steps.cache-vcpkg-linux.outputs.cache-hit != 'true'
