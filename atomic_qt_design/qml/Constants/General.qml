@@ -50,8 +50,13 @@ QtObject {
         return diffPrefix(received) + symbols[fiat] + " " + amount
     }
 
+    function formatDouble(v) {
+        // Remove more than 8 decimals, then convert to string without trailing zeros
+        return parseFloat(v).toFixed(8).replace(/\.?0+$/,"")
+    }
+
     function formatCrypto(received, amount, ticker, fiat_amount, fiat) {
-        return diffPrefix(received) + amount + " " + ticker + (fiat_amount ? " (" + formatFiat("", fiat_amount, fiat) + ")" : "")
+        return diffPrefix(received) + formatDouble(amount) + " " + ticker + (fiat_amount ? " (" + formatFiat("", fiat_amount, fiat) + ")" : "")
     }
 
     function fullCoinName(name, ticker) {
@@ -73,6 +78,10 @@ QtObject {
 
     function getTickersAndBalances(coins) {
         return coins.map(c => c.ticker + " (" + c.balance + ")")
+    }
+
+    function getMinTradeAmount() {
+        return 0.00777
     }
 
     function hasEnoughFunds(sell, base, rel, price, volume) {
@@ -101,6 +110,7 @@ QtObject {
         Object.keys(orders).map((key, index) => {
           orders[key].uuid = key
           orders[key].is_recent_swap = true
+          orders[key].am_i_maker = orders[key].type.toLowerCase() === 'maker'
         })
 
         let arr = Object.values(orders).sort((a, b) => b.events[b.events.length-1].timestamp - a.events[a.events.length-1].timestamp)

@@ -100,6 +100,36 @@ namespace mm2::api
 
     disable_coin_answer rpc_disable_coin(disable_coin_request&& request);
 
+    struct recover_funds_of_swap_request
+    {
+        std::string swap_uuid;
+    };
+
+    void to_json(nlohmann::json& j, const recover_funds_of_swap_request& cfg);
+
+    struct recover_funds_of_swap_answer_success
+    {
+        std::string action;
+        std::string coin;
+        std::string tx_hash;
+        std::string tx_hex;
+    };
+
+    void from_json(const nlohmann::json& j, recover_funds_of_swap_answer_success& answer);
+
+    struct recover_funds_of_swap_answer
+    {
+        std::optional<std::string>                          error;
+        std::optional<recover_funds_of_swap_answer_success> result;
+        int                                                 rpc_result_code;
+        std::string                                         raw_result;
+    };
+
+    void from_json(const nlohmann::json& j, recover_funds_of_swap_answer& answer);
+
+    recover_funds_of_swap_answer rpc_recover_funds(recover_funds_of_swap_request&& request);
+
+
     struct balance_request
     {
         std::string coin;
@@ -399,6 +429,18 @@ namespace mm2::api
 
     buy_answer rpc_buy(buy_request&& request);
 
+    struct setprice_request
+    {
+        std::string base;
+        std::string rel;
+        std::string price;
+        std::string volume;
+        bool max{false};
+        bool cancel_previous{false};
+    };
+
+    void to_json(nlohmann::json& j, const setprice_request& request);
+
     struct sell_request
     {
         std::string base;
@@ -574,6 +616,7 @@ namespace mm2::api
         std::string              taker_amount;
         std::string              maker_amount;
         std::string              type;
+        std::string              total_time_in_seconds;
         bool                     funds_recoverable;
     };
 
@@ -585,6 +628,7 @@ namespace mm2::api
         std::size_t                limit;
         std::size_t                skipped;
         std::size_t                total;
+        std::string                raw_result;
     };
 
     void from_json(const nlohmann::json& j, my_recent_swaps_answer_success& results);
@@ -601,8 +645,11 @@ namespace mm2::api
 
     my_recent_swaps_answer rpc_my_recent_swaps(my_recent_swaps_request&& request);
 
+    nlohmann::json rpc_batch_electrum(std::vector<electrum_request> requests);
+    nlohmann::json rpc_batch_enable(std::vector<enable_request> requests);
+
     template <typename RpcReturnType>
-    static RpcReturnType rpc_process_answer(const RestClient::Response& resp) noexcept;
+    static RpcReturnType rpc_process_answer(const RestClient::Response& resp, const std::string& rpc_command) noexcept;
 
     nlohmann::json template_request(std::string method_name) noexcept;
 

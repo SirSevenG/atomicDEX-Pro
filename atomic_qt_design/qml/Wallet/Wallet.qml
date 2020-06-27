@@ -82,11 +82,11 @@ RowLayout {
                 spacing: 50
 
                 DefaultButton {
-                    enabled: API.get().current_coin_info.tx_state !== "InProgress"
                     text: API.get().empty_string + (qsTr("Send"))
                     leftPadding: parent.width * button_margin
                     rightPadding: leftPadding
                     onClicked: send_modal.open()
+                    enabled: parseFloat(API.get().current_coin_info.balance) > 0
                 }
 
                 SendModal {
@@ -118,7 +118,7 @@ RowLayout {
                     rightPadding: leftPadding
 
                     visible: API.get().current_coin_info.is_claimable === true
-                    enabled: API.get().current_coin_info.tx_state !== "InProgress" && claim_rewards_modal.canClaim()
+                    enabled: claim_rewards_modal.canClaim()
                     onClicked: {
                         claim_rewards_modal.prepareClaimRewards()
                         claim_rewards_modal.open()
@@ -170,7 +170,11 @@ RowLayout {
                     }
 
                     DefaultText {
-                        text: API.get().empty_string + (qsTr("Syncing %n TX(s)...", "", parseInt(API.get().current_coin_info.tx_current_block)))
+                        text: API.get().empty_string + (
+                          API.get().current_coin_info.type === "ERC-20" ?
+                          (qsTr("Scanning blocks for TX History... %n block(s) left", "", parseInt(API.get().current_coin_info.blocks_left))) :
+                          (qsTr("Syncing TX History... %n TX(s) left", "", parseInt(API.get().current_coin_info.transactions_left)))
+                        )
                         Layout.alignment: Qt.AlignHCenter
                     }
                 }
