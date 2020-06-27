@@ -50,12 +50,14 @@ RowLayout {
                 ColumnLayout {
                     id: balance_layout
                     DefaultText {
+                        id: balance_text
                         text: API.get().empty_string + (General.formatCrypto("", API.get().current_coin_info.balance, API.get().current_coin_info.ticker))
                         Layout.alignment: Qt.AlignRight
                         font.pixelSize: Style.textSize5
                     }
 
                     DefaultText {
+                        id: balance_fiat_text
                         text: API.get().empty_string + (General.formatFiat("", API.get().current_coin_info.fiat_amount, API.get().fiat))
                         Layout.topMargin: -15
                         Layout.rightMargin: 4
@@ -67,15 +69,13 @@ RowLayout {
                 Image {
                     source: General.coinIcon(API.get().current_coin_info.ticker)
                     Layout.leftMargin: 10
-                    Layout.preferredHeight: balance_layout.childrenRect.height
+                    Layout.preferredHeight: balance_text.font.pixelSize + balance_fiat_text.font.pixelSize
                     Layout.preferredWidth: Layout.preferredHeight
                 }
             }
 
             // Send, Receive buttons at top
             RowLayout {
-                width: parent.width * 0.6
-
                 Layout.topMargin: -10
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
 
@@ -83,8 +83,6 @@ RowLayout {
 
                 DefaultButton {
                     text: API.get().empty_string + (qsTr("Send"))
-                    leftPadding: parent.width * button_margin
-                    rightPadding: leftPadding
                     onClicked: send_modal.open()
                     enabled: parseFloat(API.get().current_coin_info.balance) > 0
                 }
@@ -95,8 +93,6 @@ RowLayout {
 
                 DefaultButton {
                     text: API.get().empty_string + (qsTr("Receive"))
-                    leftPadding: parent.width * button_margin
-                    rightPadding: leftPadding
                     onClicked: receive_modal.open()
                 }
 
@@ -106,22 +102,18 @@ RowLayout {
 
                 DefaultButton {
                     text: API.get().empty_string + (qsTr("Swap"))
-                    leftPadding: parent.width * button_margin
-                    rightPadding: leftPadding
                     onClicked: onClickedSwap()
                 }
 
                 PrimaryButton {
                     id: button_claim_rewards
                     text: API.get().empty_string + (qsTr("Claim Rewards"))
-                    leftPadding: parent.width * button_margin
-                    rightPadding: leftPadding
 
                     visible: API.get().current_coin_info.is_claimable === true
                     enabled: claim_rewards_modal.canClaim()
                     onClicked: {
-                        claim_rewards_modal.prepareClaimRewards()
-                        claim_rewards_modal.open()
+                        if(claim_rewards_modal.prepareClaimRewards())
+                            claim_rewards_modal.open()
                     }
                 }
 
@@ -298,7 +290,6 @@ RowLayout {
                 property bool hovered: false
 
                 color: API.get().current_coin_info.ticker === model.modelData.ticker ? Style.colorTheme2 : hovered ? Style.colorTheme4 : "transparent"
-                anchors.horizontalCenter: parent.horizontalCenter
                 width: coins_bar.width
                 height: 50
 
