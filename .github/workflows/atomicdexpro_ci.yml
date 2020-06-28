@@ -331,7 +331,7 @@ jobs:
         id: cache-qt-win
         uses: actions/cache@v2
         with:
-          path: C:\Qt\${{ steps.qt_params_windows.outputs.version }}
+          path: '${{ github.workspace }}\Qt\${{ steps.qt_params_mac.outputs.version }}'
           key: ${{ runner.os }}-${{ hashFiles('.github/workflows/qt_install_params.json') }}
 
       - name: Install QT (Win)
@@ -342,7 +342,7 @@ jobs:
           host: '${{ steps.qt_params_windows.outputs.host }}'
           target: '${{ steps.qt_params_windows.outputs.target }}'
           arch: '${{ steps.qt_params_windows.outputs.arch }}'
-          dir: 'C:\'
+          dir: '${{ github.workspace }}\Qt\${{ steps.qt_params_mac.outputs.version }}'
           modules: '${{ steps.qt_params_windows.outputs.modules }}'
 
       - name: vcpkg deps (Windows)
