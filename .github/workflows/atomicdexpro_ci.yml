@@ -259,7 +259,7 @@ jobs:
           sudo make install
           sudo update_dyld_shared_cache
 
-          # get SDKs 
+          # get SDKs
           git clone https://github.com/phracker/MacOSX-SDKs $HOME/sdk
 
       - name: vcpkg deps (MacOS)
@@ -323,8 +323,10 @@ jobs:
           echo "##[set-output name=host;]$(jq -r '.windows.host' .github/workflows/qt_install_params.json)"
           echo "##[set-output name=target;]$(jq -r '.windows.target' .github/workflows/qt_install_params.json)"
           echo "##[set-output name=modules;]$(jq -r '.windows.modules' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=arch;]$(jq -r '.windows.arch' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=arch_short;]$(jq -r '.windows.arch_short' .github/workflows/qt_install_params.json)"
         id: qt_params_windows
- 
+
       - name: Cache Qt (Win)
         id: cache-qt-win
         uses: actions/cache@v2
@@ -369,7 +371,8 @@ jobs:
           scoop cache rm llvm
           scoop cache rm nim
 
-          $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\${{ steps.qt_params_windows.outputs.version }}\msvc2019_64"
+
+          $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\${{ steps.qt_params_windows.outputs.version }}\${{ steps.qt_params_windows.outputs.arch_short }}"
 
           cd ci_tools_atomic_dex
 
@@ -398,7 +401,7 @@ jobs:
         working-directory: ci_tools_atomic_dex
         run: |
           echo "Running tests"
-          $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\${{ steps.qt_params_windows.outputs.version }}\msvc2019_64"
+          $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\${{ steps.qt_params_windows.outputs.version }}\${{ steps.qt_params_windows.outputs.arch_short }}"
           cmd /c '.\ci_tools_atomic_dex.exe tests debug 2>&1'
           cd build-Debug
           cd bin

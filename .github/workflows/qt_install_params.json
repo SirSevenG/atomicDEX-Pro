@@ -16,6 +16,7 @@
 		"host": "windows",
 		"target": "desktop",
 		"arch": "win64_msvc2019_64",
+		"arch_short": "msvc2019_64",
 		"modules": "qtcharts qtwidgets debug_info"
 	}
 }
