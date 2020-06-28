@@ -338,7 +338,7 @@ jobs:
         with:
           version: '${{ steps.qt_params_windows.outputs.version }}'
           host: '${{ steps.qt_params_windows.outputs.host }}'
-          target: '${{ steps.qt_params_windows.outputs.tarhet }}'
+          target: '${{ steps.qt_params_windows.outputs.target }}'
           arch: '${{ steps.qt_params_windows.outputs.arch }}'
           dir: 'C:\'
           modules: '${{ steps.qt_params_windows.outputs.modules }}'
