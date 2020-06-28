@@ -157,9 +157,9 @@ jobs:
           ./ci_tools_atomic_dex tests debug
           cd build-Debug/bin/AntaraAtomicDexTestsAppDir/usr/bin
           cat atomic-dex-tests-result.xml
-          curl https://report.ci/upload.py --output upload.py
+          #curl https://report.ci/upload.py --output upload.py
           ls
-          python upload.py --sha `git rev-parse HEAD` -n "[Doctest Linux]" --include='atomic-dex-tests-result.xml' --framework=doctest --merge ".*"
+          #python upload.py --sha `git rev-parse HEAD` -n "[Doctest Linux]" --include='atomic-dex-tests-result.xml' --framework=doctest --merge ".*"
           echo "Uploading tests on Linux finished"
 
       - name: Upload bundle artifact (Linux)
@@ -272,9 +272,9 @@ jobs:
           ./ci_tools_atomic_dex tests debug
           cd build-Debug/bin/atomic_qt_tests.app/Contents/MacOS
           cat atomic-dex-tests-result.xml
-          curl https://report.ci/upload.py --output upload.py
+          #curl https://report.ci/upload.py --output upload.py
           ls
-          python upload.py --sha `git rev-parse HEAD` -n "[Doctest MacOS]" --include='atomic-dex-tests-result.xml' --framework=doctest --merge ".*"
+          #python upload.py --sha `git rev-parse HEAD` -n "[Doctest MacOS]" --include='atomic-dex-tests-result.xml' --framework=doctest --merge ".*"
           echo "Uploading tests on OSX finished"
 
 
@@ -364,8 +364,8 @@ jobs:
           cd build-Debug
           cd bin
           ls
-          Invoke-WebRequest -Uri https://report.ci/upload.py -OutFile upload.py
-          python upload.py --sha $(git rev-parse HEAD) -n "[Doctest Windows]" --include='atomic-dex-tests-result.xml' --framework=doctest --merge ".*"
+          #Invoke-WebRequest -Uri https://report.ci/upload.py -OutFile upload.py
+          #python upload.py --sha $(git rev-parse HEAD) -n "[Doctest Windows]" --include='atomic-dex-tests-result.xml' --framework=doctest --merge ".*"
 
       - name: Upload artifacts (Windows)
         uses: actions/upload-artifact@v1
