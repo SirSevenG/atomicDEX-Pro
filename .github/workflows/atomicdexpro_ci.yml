@@ -342,7 +342,7 @@ jobs:
           host: '${{ steps.qt_params_windows.outputs.host }}'
           target: '${{ steps.qt_params_windows.outputs.target }}'
           arch: '${{ steps.qt_params_windows.outputs.arch }}'
-          dir: '${{ github.workspace }}\Qt\${{ steps.qt_params_mac.outputs.version }}'
+          dir: '${{ github.workspace }}\'
           modules: '${{ steps.qt_params_windows.outputs.modules }}'
 
       - name: vcpkg deps (Windows)
