@@ -193,10 +193,10 @@ jobs:
         run: |
           brew install jq
           echo $(jq -r '.mac' .github/workflows/qt_install_params.json)
-          echo "##[set-output name=version;]$(jq -r '.linux.version' .github/workflows/qt_install_params.json)"
-          echo "##[set-output name=host;]$(jq -r '.linux.host' .github/workflows/qt_install_params.json)"
-          echo "##[set-output name=target;]$(jq -r '.linux.target' .github/workflows/qt_install_params.json)"
-          echo "##[set-output name=modules;]$(jq -r '.linux.modules' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=version;]$(jq -r '.mac.version' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=host;]$(jq -r '.mac.host' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=target;]$(jq -r '.mac.target' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=modules;]$(jq -r '.mac.modules' .github/workflows/qt_install_params.json)"
         id: qt_params_mac
 
       - name: Cache Qt (Mac)
