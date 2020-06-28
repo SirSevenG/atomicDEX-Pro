@@ -18,14 +18,24 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           submodules: 'true'
 
+      - name: Get QT params (Linux)
+        shell: bash
+        run: |
+          echo $(jq -r '.linux' .github/workflows/qt_install_params.json)
+          echo "##[set-output name=version;]$(jq -r '.linux.version' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=host;]$(jq -r '.linux.host' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=target;]$(jq -r '.linux.target' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=modules;]$(jq -r '.linux.modules' .github/workflows/qt_install_params.json)"
+        id: qt_params_linux
+
       - name: Install QT (Linux)
         uses: jurplel/install-qt-action@v2
         with:
-          version: '5.15.0'
-          host: 'linux'
-          target: 'desktop'
+          version: '${{ steps.qt_params_linux.outputs.version }}'
+          host: '${{ steps.qt_params_linux.outputs.host }}'
+          target: '${{ steps.qt_params_linux.outputs.target }}'
           dir: '${{ github.workspace }}'
-          modules: 'qtcharts qtwidgets debug_info'
+          modules: '${{ steps.qt_params_linux.outputs.modules }}'
           aqtversion: '==0.8'
           py7zrversion: '==0.6'
 
@@ -124,9 +134,9 @@ jobs:
 
       - name: build (Linux)
         run: |
-          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.15.0/gcc_64/lib/cmake
-          export QT_ROOT=${{ github.workspace }}/Qt/5.15.0
-          export PATH=${{ github.workspace }}/Qt/5.15.0/gcc_64/bin:$PATH
+          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/${{ steps.qt_params_linux.outputs.version }}/gcc_64/lib/cmake
+          export QT_ROOT=${{ github.workspace }}/Qt/${{ steps.qt_params_linux.outputs.version }}
+          export PATH=${{ github.workspace }}/Qt/${{ steps.qt_params_linux.outputs.version }}/gcc_64/bin:$PATH
           export PATH=$HOME/.nimble/bin:$PATH
           export CXXFLAGS=-stdlib=libc++
           export LDFLAGS=-stdlib=libc++
@@ -145,9 +155,9 @@ jobs:
           REPORT_CI_TOKEN: ${{ secrets.REPORT_CI_TOKEN_SECRET }}
         working-directory: ci_tools_atomic_dex
         run: |
-          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.15.0/gcc_64/lib/cmake
-          export QT_ROOT=${{ github.workspace }}/Qt/5.15.0
-          export PATH=${{ github.workspace }}/Qt/5.15.0/gcc_64/bin:$PATH
+          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/${{ steps.qt_params_linux.outputs.version }}/gcc_64/lib/cmake
+          export QT_ROOT=${{ github.workspace }}/Qt/${{ steps.qt_params_linux.outputs.version }}
+          export PATH=${{ github.workspace }}/Qt/${{ steps.qt_params_linux.outputs.version }}/gcc_64/bin:$PATH
           export PATH=$HOME/.nimble/bin:$PATH
           export CXXFLAGS=-stdlib=libc++
           export LDFLAGS=-stdlib=libc++
@@ -179,22 +189,32 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           submodules: 'true'
 
+      - name: Get QT params (Mac)
+        run: |
+          brew install jq
+          echo $(jq -r '.mac' .github/workflows/qt_install_params.json)
+          echo "##[set-output name=version;]$(jq -r '.linux.version' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=host;]$(jq -r '.linux.host' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=target;]$(jq -r '.linux.target' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=modules;]$(jq -r '.linux.modules' .github/workflows/qt_install_params.json)"
+        id: qt_params_mac
+
       - name: Cache Qt (Mac)
         id: cache-qt-mac
         uses: actions/cache@v2
         with:
-          path: '${{ github.workspace }}/Qt/5.15.0'
+          path: '${{ github.workspace }}/Qt/${{ steps.qt_params_mac.outputs.version }}'
           key: ${{ runner.os }}-${{ hashFiles('.github/workflows/qt_install_params.json') }}
 
       - name: Install QT (MacOS)
         if: steps.cache-qt-mac.outputs.cache-hit != 'true'
         uses: jurplel/install-qt-action@v2
         with:
-          version: '5.15.0'
-          host: 'mac'
-          target: 'desktop'
+          version: '${{ steps.qt_params_mac.outputs.version }}'
+          host: '${{ steps.qt_params_mac.outputs.host }}'
+          target: '${{ steps.qt_params_mac.outputs.target }}'
           dir: '${{ github.workspace }}'
-          modules: 'qtcharts qtwidgets debug_info'
+          modules: '${{ steps.qt_params_mac.outputs.modules }}'
 
       - name: Install deps (MacOS)
         run: |
@@ -254,8 +274,8 @@ jobs:
 
       - name: Build (MacOS)
         run: |
-          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.15.0/clang_64/lib/cmake
-          export QT_ROOT=${{ github.workspace }}/Qt/5.15.0
+          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/${{ steps.qt_params_mac.outputs.version }}/clang_64/lib/cmake
+          export QT_ROOT=${{ github.workspace }}/Qt/${{ steps.qt_params_mac.outputs.version }}
           cd ci_tools_atomic_dex
           nimble build -y
           ./ci_tools_atomic_dex bundle debug --osx_sdk=$HOME/sdk/MacOSX10.13.sdk --compiler=/usr/local/opt/llvm@9/bin/clang++
@@ -266,8 +286,8 @@ jobs:
           REPORT_CI_TOKEN: ${{ secrets.REPORT_CI_TOKEN_SECRET }}
         working-directory: ci_tools_atomic_dex
         run: |
-          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.15.0/clang_64/lib/cmake
-          export QT_ROOT=${{ github.workspace }}/Qt/5.15.0
+          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/${{ steps.qt_params_mac.outputs.version }}/clang_64/lib/cmake
+          export QT_ROOT=${{ github.workspace }}/Qt/${{ steps.qt_params_mac.outputs.version }}
           echo "Running tests"
           ./ci_tools_atomic_dex tests debug
           cd build-Debug/bin/atomic_qt_tests.app/Contents/MacOS
@@ -294,23 +314,33 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           submodules: 'true'
 
+      - name: Get QT params (Win)
+        run: |
+          choco install jq
+          echo $(jq -r '.windows' .github/workflows/qt_install_params.json)
+          echo "##[set-output name=version;](jq -r '.windows.version' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=host;](jq -r '.windows.host' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=target;](jq -r '.windows.target' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=modules;](jq -r '.windows.modules' .github/workflows/qt_install_params.json)"
+        id: qt_params_windows
+
       - name: Cache Qt (Win)
         id: cache-qt-win
         uses: actions/cache@v2
         with:
-          path: 'C:\/Qt\/5.15.0'
+          path: 'C:\/Qt\/${{ steps.qt_params_windows.outputs.version }}'
           key: ${{ runner.os }}-${{ hashFiles('.github/workflows/qt_install_params.json') }}
 
       - name: Install QT (Win)
         if: steps.cache-qt-win.outputs.cache-hit != 'true'
         uses: jurplel/install-qt-action@v2
         with:
-          version: '5.15.0'
-          host: 'windows'
-          target: 'desktop'
-          arch: 'win64_msvc2019_64'
+          version: '${{ steps.qt_params_windows.outputs.version }}'
+          host: '${{ steps.qt_params_windows.outputs.host }}'
+          target: '${{ steps.qt_params_windows.outputs.tarhet }}'
+          arch: '${{ steps.qt_params_windows.outputs.arch }}'
           dir: 'C:\'
-          modules: 'qtcharts qtwidgets debug_info'
+          modules: '${{ steps.qt_params_windows.outputs.modules }}'
 
       - name: vcpkg deps (Windows)
         uses: lukka/run-vcpkg@v3
@@ -338,7 +368,7 @@ jobs:
           scoop cache rm llvm
           scoop cache rm nim
 
-          $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\5.15.0\msvc2019_64"
+          $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\${{ steps.qt_params_windows.outputs.version }}\msvc2019_64"
 
           cd ci_tools_atomic_dex
 
@@ -367,7 +397,7 @@ jobs:
         working-directory: ci_tools_atomic_dex
         run: |
           echo "Running tests"
-          $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\5.15.0\msvc2019_64"
+          $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\${{ steps.qt_params_windows.outputs.version }}\msvc2019_64"
           cmd /c '.\ci_tools_atomic_dex.exe tests debug 2>&1'
           cd build-Debug
           cd bin
