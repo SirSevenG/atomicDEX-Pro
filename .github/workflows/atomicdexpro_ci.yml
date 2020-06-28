@@ -401,8 +401,7 @@ jobs:
         working-directory: ci_tools_atomic_dex
         run: |
           echo "Running tests"
-          $Env:QT_INSTALL_CMAKE_PATH = "${{ github.workspace }}
-          \Qt\${{ steps.qt_params_windows.outputs.version }}\${{ steps.qt_params_windows.outputs.arch_short }}"
+          $Env:QT_INSTALL_CMAKE_PATH = "${{ github.workspace }}\Qt\${{ steps.qt_params_windows.outputs.version }}\${{ steps.qt_params_windows.outputs.arch_short }}"
           cmd /c '.\ci_tools_atomic_dex.exe tests debug 2>&1'
           cd build-Debug
           cd bin
