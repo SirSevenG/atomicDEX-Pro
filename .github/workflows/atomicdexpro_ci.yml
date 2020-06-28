@@ -184,7 +184,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: '${{ github.workspace }}/Qt/5.15.0'
-          key: ${{ runner.os }}-${{ hashFiles('.github/workflows/qt_hashfile.txt') }}
+          key: ${{ runner.os }}-${{ hashFiles('.github/workflows/qt_install_params.json') }}
 
       - name: Install QT (MacOS)
         if: steps.cache-qt-mac.outputs.cache-hit != 'true'
@@ -299,7 +299,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: 'C:\/Qt\/5.15.0'
-          key: ${{ runner.os }}-${{ hashFiles('.github/workflows/qt_hashfile.txt') }}
+          key: ${{ runner.os }}-${{ hashFiles('.github/workflows/qt_install_params.json') }}
 
       - name: Install QT (Win)
         if: steps.cache-qt-win.outputs.cache-hit != 'true'

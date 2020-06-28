@@ -1,0 +1,21 @@
+{
+	"linux": {
+		"version": "5.15.0",
+		"host": "linux",
+		"target": "desktop",
+		"modules": "qtcharts qtwidgets debug_info"
+	},
+	"mac": {
+		"version": "5.15.0",
+		"host": "mac",
+		"target": "desktop",
+		"modules": "qtcharts qtwidgets debug_info"
+	},
+	"windows": {
+		"version": "5.15.0",
+		"host": "windows",
+		"target": "desktop",
+		"arch": "win64_msvc2019_64",
+		"modules": "qtcharts qtwidgets debug_info"
+	}
+}
