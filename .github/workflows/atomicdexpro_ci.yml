@@ -21,7 +21,7 @@ jobs:
       - name: Install QT (Linux)
         uses: jurplel/install-qt-action@v2
         with:
-          version: '5.14.2'
+          version: '5.15.0'
           host: 'linux'
           target: 'desktop'
           dir: '${{ github.workspace }}'
@@ -76,6 +76,7 @@ jobs:
 
           sudo apt-get update
           sudo apt-get install libc++abi-9-dev libc++-9-dev -y
+
           export CXXFLAGS=-stdlib=libc++
           export LDFLAGS=-stdlib=libc++
           export CXX=clang++-9
@@ -123,9 +124,9 @@ jobs:
 
       - name: build (Linux)
         run: |
-          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.14.2/gcc_64/lib/cmake
-          export QT_ROOT=${{ github.workspace }}/Qt/5.14.2
-          export PATH=${{ github.workspace }}/Qt/5.14.2/gcc_64/bin:$PATH
+          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.15.0/gcc_64/lib/cmake
+          export QT_ROOT=${{ github.workspace }}/Qt/5.15.0
+          export PATH=${{ github.workspace }}/Qt/5.15.0/gcc_64/bin:$PATH
           export PATH=$HOME/.nimble/bin:$PATH
           export CXXFLAGS=-stdlib=libc++
           export LDFLAGS=-stdlib=libc++
@@ -144,9 +145,9 @@ jobs:
           REPORT_CI_TOKEN: ${{ secrets.REPORT_CI_TOKEN_SECRET }}
         working-directory: ci_tools_atomic_dex
         run: |
-          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.14.2/gcc_64/lib/cmake
-          export QT_ROOT=${{ github.workspace }}/Qt/5.14.2
-          export PATH=${{ github.workspace }}/Qt/5.14.2/gcc_64/bin:$PATH
+          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.15.0/gcc_64/lib/cmake
+          export QT_ROOT=${{ github.workspace }}/Qt/5.15.0
+          export PATH=${{ github.workspace }}/Qt/5.15.0/gcc_64/bin:$PATH
           export PATH=$HOME/.nimble/bin:$PATH
           export CXXFLAGS=-stdlib=libc++
           export LDFLAGS=-stdlib=libc++
@@ -180,10 +181,10 @@ jobs:
 
       - name: Cache Qt (Mac)
         id: cache-qt-mac
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
-          path: '${{ github.workspace }}/Qt/5.14.2'
-          key: ${{ runner.os }}-qt
+          path: '${{ github.workspace }}/Qt/5.15.0'
+          key: ${{ runner.os }}-${{ hashFiles('.github/workflows/qt_install_params.json') }}
 
       - name: Install QT (MacOS)
         if: steps.cache-qt-mac.outputs.cache-hit != 'true'
@@ -253,8 +254,8 @@ jobs:
 
       - name: Build (MacOS)
         run: |
-          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.14.2/clang_64/lib/cmake
-          export QT_ROOT=${{ github.workspace }}/Qt/5.14.2
+          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.15.0/clang_64/lib/cmake
+          export QT_ROOT=${{ github.workspace }}/Qt/5.15.0
           cd ci_tools_atomic_dex
           nimble build -y
           ./ci_tools_atomic_dex bundle debug --osx_sdk=$HOME/sdk/MacOSX10.13.sdk --compiler=/usr/local/opt/llvm@9/bin/clang++
@@ -265,8 +266,8 @@ jobs:
           REPORT_CI_TOKEN: ${{ secrets.REPORT_CI_TOKEN_SECRET }}
         working-directory: ci_tools_atomic_dex
         run: |
-          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.14.2/clang_64/lib/cmake
-          export QT_ROOT=${{ github.workspace }}/Qt/5.14.2
+          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.15.0/clang_64/lib/cmake
+          export QT_ROOT=${{ github.workspace }}/Qt/5.15.0
           echo "Running tests"
           ./ci_tools_atomic_dex tests debug
           cd build-Debug/bin/atomic_qt_tests.app/Contents/MacOS
@@ -293,7 +294,15 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           submodules: 'true'
 
+      - name: Cache Qt (Win)
+        id: cache-qt-win
+        uses: actions/cache@v2
+        with:
+          path: 'C:\/Qt\/5.15.0'
+          key: ${{ runner.os }}-${{ hashFiles('.github/workflows/qt_install_params.json') }}
+
       - name: Install QT (Win)
+        if: steps.cache-qt-win.outputs.cache-hit != 'true'
         uses: jurplel/install-qt-action@v2
         with:
           version: '5.15.0'
