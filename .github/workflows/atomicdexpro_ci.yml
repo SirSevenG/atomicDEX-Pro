@@ -315,20 +315,21 @@ jobs:
           submodules: 'true'
 
       - name: Get QT params (Win)
+        shell: powershell
         run: |
           choco install jq
           echo $(jq -r '.windows' .github/workflows/qt_install_params.json)
-          echo "##[set-output name=version;](jq -r '.windows.version' .github/workflows/qt_install_params.json)"
-          echo "##[set-output name=host;](jq -r '.windows.host' .github/workflows/qt_install_params.json)"
-          echo "##[set-output name=target;](jq -r '.windows.target' .github/workflows/qt_install_params.json)"
-          echo "##[set-output name=modules;](jq -r '.windows.modules' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=version;]$(jq -r '.windows.version' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=host;]$(jq -r '.windows.host' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=target;]$(jq -r '.windows.target' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=modules;]$(jq -r '.windows.modules' .github/workflows/qt_install_params.json)"
         id: qt_params_windows
  
       - name: Cache Qt (Win)
         id: cache-qt-win
         uses: actions/cache@v2
         with:
-          path: 'C:\/Qt\/${{ steps.qt_params_windows.outputs.version }}'
+          path: 'C:\Qt\${{ steps.qt_params_windows.outputs.version }}'
           key: ${{ runner.os }}-${{ hashFiles('.github/workflows/qt_install_params.json') }}
 
       - name: Install QT (Win)
