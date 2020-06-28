@@ -192,11 +192,11 @@ jobs:
       - name: Get QT params (Mac)
         run: |
           brew install jq
-          echo $(jq -r '.linux' .github/workflows/qt_install_params.json)
-          echo "##[set-output name=version;]$(jq -r '.linux.version' .github/workflows/qt_install_params.json)"
-          echo "##[set-output name=host;]$(jq -r '.linux.host' .github/workflows/qt_install_params.json)"
-          echo "##[set-output name=target;]$(jq -r '.linux.target' .github/workflows/qt_install_params.json)"
-          echo "##[set-output name=modules;]$(jq -r '.linux.modules' .github/workflows/qt_install_params.json)"
+          echo $(jq -r '.mac' .github/workflows/qt_install_params.json)
+          echo "##[set-output name=version;]$(jq -r '.mac.version' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=host;]$(jq -r '.mac.host' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=target;]$(jq -r '.mac.target' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=modules;]$(jq -r '.mac.modules' .github/workflows/qt_install_params.json)"
         id: qt_params_mac
 
       - name: Cache Qt (Mac)
@@ -259,7 +259,7 @@ jobs:
           sudo make install
           sudo update_dyld_shared_cache
 
-          # get SDKs 
+          # get SDKs
           git clone https://github.com/phracker/MacOSX-SDKs $HOME/sdk
 
       - name: vcpkg deps (MacOS)
@@ -314,23 +314,36 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           submodules: 'true'
 
+      - name: Get QT params (Win)
+        shell: powershell
+        run: |
+          choco install jq
+          echo $(jq -r '.windows' .github/workflows/qt_install_params.json)
+          echo "##[set-output name=version;]$(jq -r '.windows.version' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=host;]$(jq -r '.windows.host' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=target;]$(jq -r '.windows.target' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=modules;]$(jq -r '.windows.modules' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=arch;]$(jq -r '.windows.arch' .github/workflows/qt_install_params.json)"
+          echo "##[set-output name=arch_short;]$(jq -r '.windows.arch_short' .github/workflows/qt_install_params.json)"
+        id: qt_params_windows
+
       - name: Cache Qt (Win)
         id: cache-qt-win
         uses: actions/cache@v2
         with:
-          path: 'C:\/Qt\/5.15.0'
+          path: 'C:\Qt\${{ steps.qt_params_windows.outputs.version }}'
           key: ${{ runner.os }}-${{ hashFiles('.github/workflows/qt_install_params.json') }}
 
       - name: Install QT (Win)
         if: steps.cache-qt-win.outputs.cache-hit != 'true'
         uses: jurplel/install-qt-action@v2
         with:
-          version: '5.15.0'
-          host: 'windows'
-          target: 'desktop'
-          arch: 'win64_msvc2019_64'
+          version: '${{ steps.qt_params_windows.outputs.version }}'
+          host: '${{ steps.qt_params_windows.outputs.host }}'
+          target: '${{ steps.qt_params_windows.outputs.target }}'
+          arch: '${{ steps.qt_params_windows.outputs.arch }}'
           dir: 'C:\'
-          modules: 'qtcharts qtwidgets debug_info'
+          modules: '${{ steps.qt_params_windows.outputs.modules }}'
 
       - name: vcpkg deps (Windows)
         uses: lukka/run-vcpkg@v3
@@ -358,7 +371,7 @@ jobs:
           scoop cache rm llvm
           scoop cache rm nim
 
-          $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\5.15.0\msvc2019_64"
+          $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\${{ steps.qt_params_windows.outputs.version }}\${{ steps.qt_params_windows.outputs.arch_short }}"
 
           cd ci_tools_atomic_dex
 
@@ -387,7 +400,7 @@ jobs:
         working-directory: ci_tools_atomic_dex
         run: |
           echo "Running tests"
-          $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\5.15.0\msvc2019_64"
+          $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\${{ steps.qt_params_windows.outputs.version }}\${{ steps.qt_params_windows.outputs.arch_short }}"
           cmd /c '.\ci_tools_atomic_dex.exe tests debug 2>&1'
           cd build-Debug
           cd bin
