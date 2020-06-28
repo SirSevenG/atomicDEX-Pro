@@ -181,10 +181,10 @@ jobs:
 
       - name: Cache Qt (Mac)
         id: cache-qt-mac
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: '${{ github.workspace }}/Qt/5.15.0'
-          key: ${{ runner.os }}-qt
+          key: ${{ runner.os }}-${{ hashFiles('.github/workflows/qt_hashfile.txt') }}
 
       - name: Install QT (MacOS)
         if: steps.cache-qt-mac.outputs.cache-hit != 'true'
@@ -294,7 +294,15 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           submodules: 'true'
 
+      - name: Cache Qt (Win)
+        id: cache-qt-win
+        uses: actions/cache@v2
+        with:
+          path: 'C:\/Qt\/5.15.0'
+          key: ${{ runner.os }}-${{ hashFiles('.github/workflows/qt_hashfile.txt') }}
+
       - name: Install QT (Win)
+        if: steps.cache-qt-win.outputs.cache-hit != 'true'
         uses: jurplel/install-qt-action@v2
         with:
           version: '5.15.0'

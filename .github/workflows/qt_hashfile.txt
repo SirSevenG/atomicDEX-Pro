@@ -1,0 +1,5 @@
+5.15.0
+qtcharts
+qtwidgets
+debug_info
+win64_msvc2019_64
