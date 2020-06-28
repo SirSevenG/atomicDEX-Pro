@@ -323,7 +323,7 @@ jobs:
           echo "##[set-output name=target;](jq -r '.windows.target' .github/workflows/qt_install_params.json)"
           echo "##[set-output name=modules;](jq -r '.windows.modules' .github/workflows/qt_install_params.json)"
         id: qt_params_windows
-
+ 
       - name: Cache Qt (Win)
         id: cache-qt-win
         uses: actions/cache@v2
