@@ -331,7 +331,7 @@ jobs:
         id: cache-qt-win
         uses: actions/cache@v2
         with:
-          path: 'C:\Qt\${{ steps.qt_params_windows.outputs.version }}'
+          path: C:\Qt\${{ steps.qt_params_windows.outputs.version }}
           key: ${{ runner.os }}-${{ hashFiles('.github/workflows/qt_install_params.json') }}
 
       - name: Install QT (Win)
