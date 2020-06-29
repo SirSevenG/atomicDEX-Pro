@@ -165,7 +165,7 @@ jobs:
           cd build-Debug/bin/AntaraAtomicDexTestsAppDir/usr/bin
           cat atomic-dex-tests-result.xml
           #curl https://report.ci/upload.py --output upload.py
-          ls
+          #ls
           #python upload.py --sha `git rev-parse HEAD` -n "[Doctest Linux]" --include='atomic-dex-tests-result.xml' --framework=doctest --merge ".*"
           echo "Uploading tests on Linux finished"
 
