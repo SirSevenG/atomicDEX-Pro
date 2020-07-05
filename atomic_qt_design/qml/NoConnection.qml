@@ -23,6 +23,7 @@ Rectangle {
         onTriggered: {
             var doc = new XMLHttpRequest();
             doc.onreadystatechange = function() {
+                console.log(doc.readyState)
                 if(doc.readyState === 1) {
                     if(!current_connection) connected = false
                     current_connection = false
