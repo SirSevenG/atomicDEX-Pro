@@ -1,9 +1,10 @@
 import QtQuick 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
-import QtQuick.Controls.Material 2.12
+
 import "../../Components"
 import "../../Constants"
+import "../../Wallet"
 
 Item {
     id: exchange_trade
@@ -117,7 +118,7 @@ Item {
     }
 
     // Cache Trade Info
-    readonly property var default_curr_trade_info: ({ "input_final_value": "0", "is_ticker_of_fees_eth": false, "trade_fee": "0", "tx_fee": "0"})
+    readonly property var default_curr_trade_info: ({ "input_final_value": "0", "is_ticker_of_fees_eth": false, "trade_fee": "0", "tx_fee": "0", "not_enough_balance_to_pay_the_fees": false, "amount_needed": "0" })
     property bool valid_trade_info: false
     property var curr_trade_info: default_curr_trade_info
 
@@ -135,6 +136,10 @@ Item {
                 updateTradeInfo()
             }
         }
+    }
+
+    function notEnoughBalanceForFees() {
+        return valid_trade_info && curr_trade_info.not_enough_balance_to_pay_the_fees
     }
 
 
@@ -284,6 +289,7 @@ Item {
                 const new_base = getTicker(true)
                 const rel = getTicker(false)
                 console.log("Setting current orderbook with params: ", new_base, rel)
+                API.get().current_coin_info.ticker = new_base
                 API.get().set_current_orderbook(new_base, rel)
                 reset(true, is_base)
                 updateOrderbook()
@@ -356,13 +362,13 @@ Item {
 
         DefaultText {
             Layout.alignment: Qt.AlignHCenter
-            text: API.get().empty_string + (qsTr("No balance available"))
+            text_value: API.get().empty_string + (qsTr("No balance available"))
             font.pixelSize: Style.textSize2
         }
 
         DefaultText {
             Layout.alignment: Qt.AlignHCenter
-            text: API.get().empty_string + (qsTr("Please enable a coin with balance or deposit funds"))
+            text_value: API.get().empty_string + (qsTr("Please enable a coin with balance or deposit funds"))
         }
     }
 
@@ -370,12 +376,30 @@ Item {
     ColumnLayout {
         id: form
 
+        spacing: layout_margin
+
         visible: form_base.ticker_list.length > 0
 
-        anchors.centerIn: parent
+//        anchors.centerIn: parent
+        anchors.fill: parent
+
+
+        InnerBackground {
+            id: graph_bg
+
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            implicitHeight: wallet.height*0.6
+
+            content: CandleStickChart {
+                width: graph_bg.width
+                height: graph_bg.height
+            }
+        }
 
         RowLayout {
-            spacing: 15
+            Layout.alignment: Qt.AlignTop
+            spacing: 0
 
             // Sell
             OrderForm {
@@ -384,31 +408,31 @@ Item {
                 my_side: true
             }
 
-            Image {
-                source: General.image_path + "exchange-exchange.svg"
-                Layout.alignment: Qt.AlignVCenter
+            FloatingBackground {
+                id: trade_icon_bg
+                z: 1
+                radius: 100
+                width: 75
+                height: width
+                auto_set_size: false
+
+                content: Image {
+                    source: General.image_path + "trade_icon.svg"
+                    Layout.alignment: Qt.AlignVCenter
+                    fillMode: Image.PreserveAspectFit
+                    width: trade_icon_bg.width*0.4
+                    height: width
+                }
             }
 
             // Receive
             OrderForm {
                 id: form_rel
-                enabled: form_base.fieldsAreFilled()
+                Layout.fillWidth: true
+                Layout.preferredHeight: form_base.height
+                column_layout.height: form_base.height
                 field.enabled: enabled && !orderIsSelected()
             }
-        }
-
-        // Trade button
-        PrimaryButton {
-            id: action_button
-            Layout.fillWidth: true
-
-            text: API.get().empty_string + (qsTr("Trade"))
-            enabled: valid_trade_info && form_base.isValid() && form_rel.isValid()
-            onClicked: confirm_trade_modal.open()
-        }
-
-        ConfirmTradeModal {
-            id: confirm_trade_modal
         }
 
         // Price
@@ -416,40 +440,26 @@ Item {
             Layout.alignment: Qt.AlignHCenter
         }
 
-        // Result
+        // Show errors
         DefaultText {
             Layout.alignment: Qt.AlignHCenter
+            color: Style.colorRed
 
-            color: action_result === "success" ? Style.colorGreen : Style.colorRed
+            text_value: API.get().empty_string + (notEnoughBalanceForFees() ?
+                                                (qsTr("Not enough balance for the fees. Need at least %1 more", "AMT TICKER").arg(General.formatCrypto("", parseFloat(curr_trade_info.amount_needed), form_base.getTicker()))) :
+                                                (form_base.hasEthFees() && !form_base.hasEnoughEthForFees()) ? (qsTr("Not enough ETH for the transaction fee")) :
+                                                (form_base.fieldsAreFilled() && !form_base.higherThanMinTradeAmount()) ? (qsTr("Sell amount is lower than minimum trade amount") + " : " + General.getMinTradeAmount()) :
+                                                (form_rel.fieldsAreFilled() && !form_rel.higherThanMinTradeAmount()) ? (qsTr("Receive amount is lower than minimum trade amount") + " : " + General.getMinTradeAmount()) : ""
 
-            text: API.get().empty_string + (action_result === "" ? "" : action_result === "success" ? "" : qsTr("Failed to place the order."))
+                      )
+            visible: form_base.fieldsAreFilled() && (notEnoughBalanceForFees() ||
+                                                     (form_base.hasEthFees() && !form_base.hasEnoughEthForFees()) ||
+                                                     !form_base.higherThanMinTradeAmount() ||
+                                                     (form_rel.fieldsAreFilled() && !form_rel.higherThanMinTradeAmount()))
         }
 
-        // Show ETH error
-        DefaultText {
-            Layout.alignment: Qt.AlignHCenter
-
-            text: API.get().empty_string + (qsTr("Not enough ETH for the transaction fee"))
-            color: Style.colorRed
-            visible: form_base.hasEthFees() && !form_base.hasEnoughEthForFees()
-        }
-
-        // Show min amount error
-        DefaultText {
-            Layout.alignment: Qt.AlignHCenter
-
-            text: API.get().empty_string + (qsTr("Sell amount is lower than minimum trade amount") + " : " + General.getMinTradeAmount())
-            color: Style.colorRed
-            visible: form_base.fieldsAreFilled() && !form_base.higherThanMinTradeAmount()
-        }
-
-        // Show min amount error
-        DefaultText {
-            Layout.alignment: Qt.AlignHCenter
-
-            text: API.get().empty_string + (qsTr("Receive amount is lower than minimum trade amount") + " : " + General.getMinTradeAmount())
-            color: Style.colorRed
-            visible: form_rel.fieldsAreFilled() && !form_rel.higherThanMinTradeAmount()
+        ConfirmTradeModal {
+            id: confirm_trade_modal
         }
     }
 }

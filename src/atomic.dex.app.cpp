@@ -41,6 +41,7 @@
 //! Project Headers
 #include "atomic.dex.app.hpp"
 #include "atomic.dex.mm2.hpp"
+#include "atomic.dex.provider.cex.prices.hpp"
 #include "atomic.dex.provider.coinpaprika.hpp"
 #include "atomic.dex.qt.bindings.hpp"
 #include "atomic.dex.security.hpp"
@@ -247,6 +248,7 @@ namespace atomic_dex
         {
             auto& mm2_s = system_manager_.create_system<mm2>();
             system_manager_.create_system<coinpaprika_provider>(mm2_s);
+            system_manager_.create_system<cex_prices_provider>(mm2_s);
 
             connect_signals();
             this->m_need_a_full_refresh_of_mm2 = false;
@@ -307,6 +309,12 @@ namespace atomic_dex
             {
                 emit myOrdersUpdated();
                 m_refresh_orders_needed = false;
+            }
+
+            if (m_refresh_ohlc_needed)
+            {
+                emit OHLCDataUpdated();
+                m_refresh_ohlc_needed = false;
             }
 
             if (m_refresh_transaction_only)
@@ -439,6 +447,7 @@ namespace atomic_dex
         //! MM2 system need to be created before the GUI and give the instance to the gui
         auto& mm2_system = system_manager_.create_system<mm2>();
         system_manager_.create_system<coinpaprika_provider>(mm2_system);
+        system_manager_.create_system<cex_prices_provider>(mm2_system);
 
         connect_signals();
         if (is_there_a_default_wallet())
@@ -825,6 +834,7 @@ namespace atomic_dex
 
         system_manager_.mark_system<mm2>();
         system_manager_.mark_system<coinpaprika_provider>();
+        system_manager_.mark_system<cex_prices_provider>();
 
         get_dispatcher().sink<change_ticker_event>().disconnect<&application::on_change_ticker_event>(*this);
         get_dispatcher().sink<enabled_coins_event>().disconnect<&application::on_enabled_coins_event>(*this);
@@ -833,6 +843,7 @@ namespace atomic_dex
         get_dispatcher().sink<mm2_initialized>().disconnect<&application::on_mm2_initialized_event>(*this);
         get_dispatcher().sink<mm2_started>().disconnect<&application::on_mm2_started_event>(*this);
         get_dispatcher().sink<refresh_order_needed>().disconnect<&application::on_refresh_order_event>(*this);
+        get_dispatcher().sink<refresh_ohlc_needed>().disconnect<&application::on_refresh_ohlc_event>(*this);
 
         this->m_need_a_full_refresh_of_mm2 = true;
 
@@ -850,6 +861,7 @@ namespace atomic_dex
         get_dispatcher().sink<mm2_initialized>().connect<&application::on_mm2_initialized_event>(*this);
         get_dispatcher().sink<mm2_started>().connect<&application::on_mm2_started_event>(*this);
         get_dispatcher().sink<refresh_order_needed>().connect<&application::on_refresh_order_event>(*this);
+        get_dispatcher().sink<refresh_ohlc_needed>().connect<&application::on_refresh_ohlc_event>(*this);
     }
 
     QString
@@ -892,10 +904,11 @@ namespace atomic_dex
     application::get_trade_infos(const QString& ticker, const QString& receive_ticker, const QString& amount)
     {
         spdlog::debug("{} l{} f[{}]", __FUNCTION__, __LINE__, fs::path(__FILE__).filename().string());
+        spdlog::debug("ticker {}, receive_ticker {}, amount {}", ticker.toStdString(), receive_ticker.toStdString(), amount.toStdString());
         QVariantMap out;
 
-        auto trade_fee_f = get_mm2().get_trade_fee(ticker.toStdString(), amount.toStdString(), false);
-        auto answer      = get_mm2().get_trade_fixed_fee(ticker.toStdString());
+        t_float_50 trade_fee_f = get_mm2().get_trade_fee(ticker.toStdString(), amount.toStdString(), false);
+        auto       answer      = get_mm2().get_trade_fixed_fee(ticker.toStdString());
 
         if (!answer.amount.empty())
         {
@@ -907,8 +920,24 @@ namespace atomic_dex
                 get_mm2().apply_erc_fees(receive_ticker.toStdString(), erc_fees);
             }
 
-            auto tx_fee_value     = QString::fromStdString(get_formated_float(tx_fee_f));
-            auto final_balance    = get_formated_float(t_float_50(amount.toStdString()) - (trade_fee_f + tx_fee_f));
+            auto tx_fee_value = QString::fromStdString(get_formated_float(tx_fee_f));
+
+            const std::string amount_std      = t_float_50(amount.toStdString()) < minimal_trade_amount() ? minimal_trade_amount_str() : amount.toStdString();
+            t_float_50        final_balance_f = t_float_50(amount_std) - (trade_fee_f + tx_fee_f);
+            std::string       final_balance   = amount.toStdString();
+            spdlog::debug("{} - ({} + {})) = {}", amount.toStdString(), trade_fee_f.str(8), tx_fee_f.str(8), final_balance_f.str(8));
+            if (final_balance_f.convert_to<float>() > 0.0)
+            {
+                final_balance = get_formated_float(final_balance_f);
+                out.insert("not_enough_balance_to_pay_the_fees", false);
+            }
+            else
+            {
+                spdlog::info("final_balance_f < 0");
+                out.insert("not_enough_balance_to_pay_the_fees", true);
+                t_float_50 amount_needed = minimal_trade_amount() - final_balance_f;
+                out.insert("amount_needed", QString::fromStdString(get_formated_float(amount_needed)));
+            }
             auto final_balance_qt = QString::fromStdString(final_balance);
 
             out.insert("trade_fee", QString::fromStdString(get_mm2().get_trade_fee_str(ticker.toStdString(), amount.toStdString(), false)));
@@ -983,7 +1012,7 @@ namespace atomic_dex
         qDebug() << "locale before: " << QLocale().name();
         QLocale::setDefault(get_locale(current_lang));
         qDebug() << "locale after: " << QLocale().name();
-        auto res = this->m_translator.load("atomic_qt_" + current_lang, QLatin1String(":/atomic_qt_design/assets/languages"));
+        [[maybe_unused]] auto res = this->m_translator.load("atomic_qt_" + current_lang, QLatin1String(":/atomic_qt_design/assets/languages"));
         assert(res);
         this->m_app->installTranslator(&m_translator);
         emit on_lang_changed();
@@ -1204,6 +1233,56 @@ namespace atomic_dex
     }
 } // namespace atomic_dex
 
+//! OHLC Relative functions
+namespace atomic_dex
+{
+    QVariantList
+    application::get_ohlc_data(const QString& range)
+    {
+        QVariantList out;
+        auto&        provider = this->system_manager_.get_system<cex_prices_provider>();
+        auto         json     = provider.get_ohlc_data(range.toStdString());
+
+        QJsonDocument q_json = QJsonDocument::fromJson(QString::fromStdString(json.dump()).toUtf8());
+        out                  = q_json.array().toVariantList();
+        return out;
+    }
+
+    QVariantMap
+    application::find_closest_ohlc_data(int range, int timestamp)
+    {
+        QVariantMap out;
+        auto&       provider = this->system_manager_.get_system<cex_prices_provider>();
+        auto        json     = provider.get_ohlc_data(std::to_string(range));
+
+        auto it = std::lower_bound(rbegin(json), rend(json), timestamp, [](const nlohmann::json& current_json, int timestamp) {
+            int res = current_json.at("timestamp").get<int>();
+            return timestamp < res;
+        });
+
+        if (it != json.rend())
+        {
+            QJsonDocument q_json = QJsonDocument::fromJson(QString::fromStdString(it->dump()).toUtf8());
+            out                  = q_json.object().toVariantMap();
+        }
+        return out;
+    }
+
+    bool
+    application::is_supported_ohlc_data_ticker_pair(const QString& base, const QString& rel)
+    {
+        auto& provider = this->system_manager_.get_system<cex_prices_provider>();
+        return provider.is_pair_supported(base.toStdString(), rel.toStdString());
+    }
+
+    void
+    application::on_refresh_ohlc_event(const refresh_ohlc_needed&) noexcept
+    {
+        spdlog::debug("{} l{}", __FUNCTION__, __LINE__);
+        this->m_refresh_ohlc_needed = true;
+    }
+} // namespace atomic_dex
+
 //! Wallet manager QML API
 namespace atomic_dex
 {
@@ -1241,5 +1320,23 @@ namespace atomic_dex
     application::is_there_a_default_wallet()
     {
         return atomic_dex::qt_wallet_manager::is_there_a_default_wallet();
+    }
+
+    QStringList
+    application::get_addressbook_categories_list() const
+    {
+        return m_wallet_manager.get_categories_list();
+    }
+
+    QVariantMap
+    application::get_address_from_addressbook(const QString& contact_name) const
+    {
+        return m_wallet_manager.get_address_from(contact_name.toStdString());
+    }
+
+    bool
+    application::add_category_in_addressbook(const QString& category_name, bool with_update_file) noexcept
+    {
+        return m_wallet_manager.add_category(category_name.toStdString(), with_update_file);
     }
 } // namespace atomic_dex

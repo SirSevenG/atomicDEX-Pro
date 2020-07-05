@@ -1,7 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
-import QtQuick.Controls.Material 2.12
+
 import "../Components"
 import "../Constants"
 
@@ -31,7 +31,7 @@ DefaultModal {
             source: General.image_path + "exchange-trade-complete.svg"
         }
 
-        BusyIndicator {
+        DefaultBusyIndicator {
             visible: details.is_recent_swap !== undefined &&
                      getStatus(details) !== status_swap_successful &&
                      getStatus(details) !== status_swap_failed
@@ -47,7 +47,7 @@ DefaultModal {
                      (details.events !== undefined || // Has events, ongoing or
                     details.am_i_maker === false) // Taker order with no events
             color: visible ? getStatusColor(details) : ''
-            text: API.get().empty_string + (visible ? getStatusTextWithPrefix(details) : '')
+            text_value: API.get().empty_string + (visible ? getStatusTextWithPrefix(details) : '')
         }
 
         OrderContent {
@@ -69,9 +69,30 @@ DefaultModal {
 
         // Maker/Taker
         DefaultText {
-            text: API.get().empty_string + (details.am_i_maker ? qsTr("Maker Order"): qsTr("Taker Order"))
-            color: Style.colorWhite6
+            text_value: API.get().empty_string + (details.am_i_maker ? qsTr("Maker Order"): qsTr("Taker Order"))
+            color: Style.colorThemeDarkLight
             Layout.alignment: Qt.AlignRight
+        }
+
+        // Refund state
+        TextFieldWithTitle {
+            Layout.topMargin: -20
+
+            title: API.get().empty_string + (qsTr("Refund State"))
+            field.text: {
+                let str = API.get().empty_string
+                const e = getLastEvent(details)
+
+                if(e.state === "TakerPaymentWaitRefundStarted" ||
+                   e.state === "MakerPaymentWaitRefundStarted") {
+                    str += qsTr("Your swap failed but the auto-refund process for your payment started already. Please wait and keep application opened until you receive your payment back")
+                }
+
+                return str
+            }
+            field.readOnly: true
+
+            visible: field.text !== ''
         }
 
         // Date
@@ -79,7 +100,6 @@ DefaultModal {
             title: API.get().empty_string + (qsTr("Date"))
             text: API.get().empty_string + (details.date)
             visible: text !== ''
-            Layout.topMargin: -20
         }
 
         // Swap ID / UUID
@@ -132,7 +152,7 @@ DefaultModal {
             DangerButton {
                 visible: details.cancellable !== undefined && details.cancellable
                 Layout.fillWidth: true
-                text: API.get().empty_string + (qsTr("Cancel"))
+                text: API.get().empty_string + (qsTr("Cancel Order"))
                 onClicked: onCancelOrder(details.uuid)
             }
 
